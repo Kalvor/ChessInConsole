@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Chess.Pieces
 {
-    internal class IPiece
+    public interface IPiece
     {
     }
 }

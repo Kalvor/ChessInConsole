@@ -1,6 +1,7 @@
 ﻿using Game;
 using Game.Tools;
 using Microsoft.Extensions.DependencyInjection;
+using Networking.Services.Implementations;
 using System.Net.NetworkInformation;
 
 
@@ -24,22 +25,5 @@ using System.Net.NetworkInformation;
 //{
 //    await gameHost.StopGameThreadsAsync();
 //}
-foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
-{
-    foreach (UnicastIPAddressInformation ip in ni.GetIPProperties().UnicastAddresses)
-    {
-        if (!ip.IsDnsEligible)
-        {
-            if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-            {
-                // All IP Address in the LAN
-            }
-        }
-    }
-}
-System.Net.NetworkInformation.Ping p = new System.Net.NetworkInformation.Ping();
-System.Net.NetworkInformation.PingReply rep = p.Send("192.168.1.1");
-if (rep.Status == System.Net.NetworkInformation.IPStatus.Success)
-{
-    //host is active
-}
+var networkAccessor = new NetworkAccessor();
+var hosts = networkAccessor.GetAvaliableHosts().ToList();

@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Chess.Tools
 {
-    internal class Clock
+    public sealed class Clock
     {
+        
     }
 }
