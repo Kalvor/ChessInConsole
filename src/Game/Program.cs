@@ -30,6 +30,6 @@ var networkAccessor = new NetworkAccessor();
 
 await networkAccessor.SendDataAsync(new Networking.Data.Host
 {
-    Address = System.Net.IPAddress.Parse("192.168.1.6")
+    Address = System.Net.IPAddress.Parse("192.168.1.62")
 }, "Jebac komune kurwa");
 Console.WriteLine();
