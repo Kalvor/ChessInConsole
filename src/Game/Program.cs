@@ -26,4 +26,10 @@ using System.Net.NetworkInformation;
 //    await gameHost.StopGameThreadsAsync();
 //}
 var networkAccessor = new NetworkAccessor();
-var hosts = networkAccessor.GetAvaliableHosts().ToList();
+//var hosts = networkAccessor.GetAvaliableHosts().ToList();
+
+await networkAccessor.SendDataToHostAsync(new Networking.Data.Host
+{
+    Address = System.Net.IPAddress.Parse("192.168.1.6")
+}, "DUPA");
+Console.WriteLine();
