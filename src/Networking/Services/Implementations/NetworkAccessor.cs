@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Runtime;
 using System.Text;
 
@@ -66,37 +67,41 @@ namespace Networking.Services.Implementations
             return null;
         }
 
-        public async Task<string> ListenForMessageAsync()
+        public async Task<string> RecieveDataAsync(Host sender)
         {
-
+            var msg = string.Empty;
             using (var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
             {
-                socket.Connect(new IPEndPoint(IPAddress.Loopback, 23456));
-                while (true)
+                socket.Connect(new IPEndPoint(sender.Address, 23456));
+                bool flag = true;
+                while (flag)
                 {
-                    byte[] buffer= new byte[1024];
+                    byte[] buffer= new byte[socket.ReceiveBufferSize];
                     var read = socket.Receive(buffer);
-                    string msg = Encoding.ASCII.GetString(buffer);
+                    msg = Encoding.ASCII.GetString(buffer);
+                    flag = false;
                 }
             }
-            return "";
+            return msg;
         }
 
-        public async Task<bool> SendDataToHostAsync(Host reciever, string jsonMessage)
+        public async Task<bool> SendDataAsync(Host reciever, string jsonMessage)
         {
             using (var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
             {
                 socket.Bind(new IPEndPoint(IPAddress.Any, 23456));
                 socket.Listen(100);
-                while (true)
+                bool flag = true;
+                while (flag)
                 {
                     using (var client = socket.Accept())
                     {
-                        client.Send(Encoding.ASCII.GetBytes("DUPA"));
+                        client.SendTo(Encoding.ASCII.GetBytes(jsonMessage), new IPEndPoint(reciever.Address, 23456));
+                        flag = false;
                     }
                 }
+                return true;
             }
-            return false;
         }
     }
 }

@@ -28,8 +28,8 @@ using System.Net.NetworkInformation;
 var networkAccessor = new NetworkAccessor();
 //var hosts = networkAccessor.GetAvaliableHosts().ToList();
 
-await networkAccessor.SendDataToHostAsync(new Networking.Data.Host
+await networkAccessor.SendDataAsync(new Networking.Data.Host
 {
     Address = System.Net.IPAddress.Parse("192.168.1.6")
-}, "DUPA");
+}, "Jebac komune kurwa");
 Console.WriteLine();
