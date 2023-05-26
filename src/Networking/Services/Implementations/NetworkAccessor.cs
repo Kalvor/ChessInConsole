@@ -2,12 +2,13 @@
 using Networking.Services.Interfaces;
 using System.Diagnostics;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 
 namespace Networking.Services.Implementations
 {
-    public sealed class NetworkAccessor : INetworkAccessor
+    internal sealed class NetworkAccessor : INetworkAccessor
     {
         public IEnumerable<Host> GetAvaliableHosts()
         {
@@ -17,6 +18,15 @@ namespace Networking.Services.Implementations
                 .Select(c => c.Split(new char[] { ' ', '\t' }))
                 .Where(c => c.Length == 3)
                 .Select(c => new Host(c[0]));
+        }
+
+        public Host GetLocalHost()
+        {
+            return new Host(NetworkInterface.GetAllNetworkInterfaces()
+                .Where(c => c.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 || c.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
+                .Where(c => c.Name.ToLower().StartsWith("wi-fi"))
+                .Select(c => c.GetIPProperties().UnicastAddresses.Where(a => a.Address.AddressFamily == AddressFamily.InterNetwork).First())
+                .First().Address.ToString());
         }
 
         public async Task<string> RecieveDataAsync(Host sender)
@@ -46,7 +56,7 @@ namespace Networking.Services.Implementations
             socket.Bind(new IPEndPoint(IPAddress.Any, 23456));
             socket.Listen(100);
             using var client = await socket.AcceptAsync();
-            byte[] encodedMessage = !client.RemoteEndPoint!.ToString()!.StartsWith(reciever.Address.ToString())
+            ArraySegment<byte> encodedMessage = !client.RemoteEndPoint!.ToString()!.StartsWith(reciever.Address.ToString())
                 ? Encoding.ASCII.GetBytes("ERROR : Currently host is not intending to send data to you.")
                 : Encoding.ASCII.GetBytes(jsonMessage);
 

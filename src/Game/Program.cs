@@ -1,13 +1,12 @@
 ﻿using Game;
-using Game.Tools;
 using Microsoft.Extensions.DependencyInjection;
-using Networking.Services.Implementations;
-using System.Net.NetworkInformation;
+using Networking;
 
 
-//var services = new ServiceCollection();
-//services.AddGameServices();
-//IServiceProvider serviceProvider = services.BuildServiceProvider();
+var services = new ServiceCollection();
+services.AddNetworkingLayer();
+services.AddGameServices();
+IServiceProvider serviceProvider = services.BuildServiceProvider();
 //var gameHost = serviceProvider.GetRequiredService<ConsoleGameHost>();
 //var inputReader = serviceProvider.GetRequiredService<InputReader>();
 //var messageDisplayer = serviceProvider.GetRequiredService<MessageDisplayer>();
@@ -25,11 +24,3 @@ using System.Net.NetworkInformation;
 //{
 //    await gameHost.StopGameThreadsAsync();
 //}
-var networkAccessor = new NetworkAccessor();
-//var hosts = networkAccessor.GetAvaliableHosts().ToList();
-
-await networkAccessor.SendDataAsync(new Networking.Data.Host
-{
-    Address = System.Net.IPAddress.Parse("192.168.1.62")
-}, "Jebac komune kurwa");
-Console.WriteLine();

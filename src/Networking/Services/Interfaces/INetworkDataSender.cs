@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Networking.Data;
+using Networking.Models;
 
 namespace Networking.Services.Interfaces
 {
-    internal class INetworkDataSender
+    public interface INetworkDataSender
     {
+        Task SendGameInvitationAsync(GameInvitation invitation, Host reciever);
+        Task SendMoveAsync(MoveInput move, Host reciever);
     }
 }

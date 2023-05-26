@@ -1,5 +1,4 @@
-﻿using Game.Data.Models;
-using Game.Threads;
+﻿using Game.Threads;
 
 namespace Game
 {
@@ -11,11 +10,11 @@ namespace Game
             _GameThreads = gameThreads;
         }
 
-        public Task RegisterInNetworkAsync(PlayerMetadata playerMetadata)
-        {
-            // throw new NotImplementedException();
-            return Task.CompletedTask;
-        }
+        //public Task RegisterInNetworkAsync(PlayerMetadata playerMetadata)
+        //{
+        //    // throw new NotImplementedException();
+        //    return Task.CompletedTask;
+        //}
 
         public Task RunGameThreadsAsync()
         {
