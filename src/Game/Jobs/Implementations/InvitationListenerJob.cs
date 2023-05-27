@@ -15,8 +15,9 @@ namespace Game.Jobs.Implementations
 
         private async Task internalRunAsync()
         {
+            Thread.Sleep(1000);
  
-            //Console.WriteLine("InvListener");
+            Console.WriteLine("InvListener");
     
         }
     }

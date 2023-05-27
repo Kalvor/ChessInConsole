@@ -15,12 +15,12 @@ namespace Game.Jobs.Implementations
         {
             await base.HostRun(() =>
             {
-                Task listenerTask = _InputReader.ListenForKey(ConsoleKey.Escape);
-                if (listenerTask.IsCompleted)
-                {
-                    _CancellationPool.PauseAll();
-                    ProcessesOrchestrator.KillAllProcesses();
-                }
+                //Task listenerTask = _InputReader.ListenForKey(ConsoleKey.Escape);
+                //if (listenerTask.IsCompleted)
+                //{
+                //    _CancellationPool.PauseAll();
+                //    ProcessesOrchestrator.KillAllProcesses();
+                //}
                 return Task.CompletedTask;
             });
         }

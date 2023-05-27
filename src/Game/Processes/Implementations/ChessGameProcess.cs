@@ -20,7 +20,10 @@ namespace Game.Processes.Implementations
 
             Console.WriteLine("SZACHY!");
             var x = Console.ReadLine();
-            
+
+            ProcessesOrchestrator.ResumeProcess<MainProcess>();
+            ProcessesOrchestrator.KillProcess<ChessGameProcess>();
+
         }
     }
 }

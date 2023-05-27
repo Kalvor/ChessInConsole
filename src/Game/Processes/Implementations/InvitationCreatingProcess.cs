@@ -20,6 +20,10 @@ namespace Game.Processes.Implementations
 
             Console.WriteLine("INV!");
             var x = Console.ReadLine();
+            ProcessesOrchestrator.ResumeProcess<MainProcess>();
+
+            ProcessesOrchestrator.KillProcess<InvitationCreatingProcess>();
+
 
         }
     }
