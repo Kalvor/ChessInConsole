@@ -1,36 +1,33 @@
-﻿using Game.Tools;
-
-namespace Game.Jobs
+﻿namespace Game.Jobs
 {
     public abstract class BaseGameJob : IJob
     {
         public bool IsPaused => _CancellationPool.Pool[GetType()].IsCancellationRequested;
 
-        protected readonly CancellationPool _CancellationPool;
-        protected BaseGameJob(CancellationPool cancellationPool)
+        protected readonly JobsCancellationPool _CancellationPool;
+        protected BaseGameJob(JobsCancellationPool cancellationPool)
         {
             _CancellationPool = cancellationPool;
         }
 
-        public virtual Task RunAsync()
-        {
-            throw new NotImplementedException();
-        }
-        public virtual Task StopAsync()
-        {
-            _CancellationPool.PauseJob(this.GetType());
-            return Task.CompletedTask;
-        }
-        protected async Task HostRun(Func<Task> run)
+        public virtual async Task RunAsync()
         {
             do
             {
                 if (!IsPaused)
                 {
-                    await run();
+                    await JobMethodAsync();
                 }
             }
             while (true);
         }
+
+        public virtual Task StopAsync()
+        {
+            _CancellationPool.PauseJob(this.GetType());
+            return Task.CompletedTask;
+        }
+
+        public abstract Task JobMethodAsync();
     }
 }

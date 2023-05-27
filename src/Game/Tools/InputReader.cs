@@ -2,8 +2,6 @@
 {
     public sealed class InputReader
     {
-        //public GameInvitationChoice GetGameInvitationChoice() { return default; }
-        //public PlayerMetadata GetPlayerMetadata() { return null; }
         public Task ListenForKey(ConsoleKey key)
         {
             while(Console.ReadKey().Key != key)
@@ -21,6 +19,11 @@
         public int ReadInt()
         {
             return int.Parse(Console.ReadLine()!);
+        }
+
+        public ConsoleKey ReadKeyPressed()
+        {
+            return Console.ReadKey().Key;
         }
     }
 }

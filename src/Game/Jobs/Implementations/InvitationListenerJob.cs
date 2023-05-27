@@ -1,24 +1,20 @@
-﻿using System.Diagnostics;
+﻿using Networking.Services.Interfaces;
 
 namespace Game.Jobs.Implementations
 {
     public sealed class InvitationListenerJob : BaseGameJob
     {
-        public InvitationListenerJob(CancellationPool cancellationPool) : base(cancellationPool)
+        private readonly INetworkDataReciever _NetDataReciever;
+        public InvitationListenerJob(JobsCancellationPool cancellationPool, INetworkDataReciever netDataReciever) : base(cancellationPool)
         {
+            _NetDataReciever = netDataReciever;
         }
 
-        public override async Task RunAsync()
+        public override async Task JobMethodAsync()
         {
-            await base.HostRun(internalRunAsync);
-        }
+            var invitation = await _NetDataReciever.ListenForGameInvitationAsync();
 
-        private async Task internalRunAsync()
-        {
-            Thread.Sleep(1000);
- 
-            Console.WriteLine("InvListener");
-    
+            Console.WriteLine("Mam zapro");
         }
     }
 }

@@ -5,5 +5,6 @@
         bool IsPaused { get; }
         Task RunAsync();
         Task StopAsync();
+        Task JobMethodAsync();
     }
 }

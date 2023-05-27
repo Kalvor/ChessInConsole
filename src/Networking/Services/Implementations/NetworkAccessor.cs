@@ -14,8 +14,7 @@ namespace Networking.Services.Implementations
         {
             return GetARPResult()
                 .Split(new char[] { '\n', '\r' })
-                .Where(c => !String.IsNullOrEmpty(c))
-                .Select(c => c.Split(new char[] { ' ', '\t' }))
+                .Select(c => c.Split(new char[] { ' ', '\t' }).Where(c=> !String.IsNullOrEmpty(c)).ToArray())       
                 .Where(c => c.Length == 3)
                 .Select(c => new Host(c[0]));
         }
@@ -86,14 +85,8 @@ namespace Networking.Services.Implementations
             }
             catch (Exception ex)
             {
+                p.Close();
                 throw new Exception("IPInfo: Error Retrieving 'arp -a' Results", ex);
-            }
-            finally
-            {
-                if (p != null)
-                {
-                    p.Close();
-                }
             }
 
             return output;

@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Game.Jobs
 {
-    public sealed class CancellationPool
+    public sealed class JobsCancellationPool
     {
-        public CancellationPool(IEnumerable<Type> jobs)
+        public JobsCancellationPool(IEnumerable<Type> jobs)
         {
             _pool = new ConcurrentDictionary<Type, CancellationTokenSource>(jobs.ToDictionary(c => c, c => new CancellationTokenSource()));
         }
@@ -27,7 +27,7 @@ namespace Game.Jobs
 
         public void ResumeJob<TGameJob>() where TGameJob : IJob
         {
-            _pool[typeof(TGameJob)].TryReset();
+            _pool[typeof(TGameJob)] = new CancellationTokenSource();
         }
 
         public void PauseAll()

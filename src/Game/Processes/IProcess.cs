@@ -5,7 +5,7 @@ namespace Game.Processes
     public interface IProcess
     {
         public Task StartAsync();
-        public Task KillAsync();
+        public Task ProcessMethodAsync();
         public IEnumerable<IJob> Jobs { get; }
     }
 }

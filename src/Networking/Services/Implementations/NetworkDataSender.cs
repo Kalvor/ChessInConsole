@@ -19,6 +19,11 @@ namespace Networking.Services.Implementations
             await _NetworkAccessor.SendDataAsync(reciever,JsonConvert.SerializeObject(invitation));
         }
 
+        public async Task SendGameInvitationResponseAsync(GameInvitationResponse response, Host reciever)
+        {
+            await _NetworkAccessor.SendDataAsync(reciever, JsonConvert.SerializeObject(response));
+        }
+
         public async Task SendMoveAsync(MoveInput move, Host reciever)
         {
             await _NetworkAccessor.SendDataAsync(reciever, JsonConvert.SerializeObject(move));

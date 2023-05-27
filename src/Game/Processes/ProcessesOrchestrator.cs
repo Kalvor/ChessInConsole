@@ -29,7 +29,7 @@ namespace Game.Processes
 
         public static void SuspendProcess<TProcess>() where TProcess : IProcess
         {
-            var processes = Process.GetProcesses().Where(c => GetProcessesIds<TProcess>().Contains(c.Id)).ToList();
+            var processes = Process.GetProcesses().Where(c => GetProcessesIds(typeof(TProcess)).Contains(c.Id)).ToList();
             foreach (var process in processes)
             {
                 foreach (ProcessThread thread in process.Threads)
@@ -46,7 +46,7 @@ namespace Game.Processes
 
         public static void ResumeProcess<TProcess>() where TProcess : IProcess
         {
-            var processes = Process.GetProcesses().Where(c => GetProcessesIds<TProcess>().Contains(c.Id)).ToList();
+            var processes = Process.GetProcesses().Where(c => GetProcessesIds(typeof(TProcess)).Contains(c.Id)).ToList();
             Console.WriteLine(processes.Count);
             foreach (var process in processes)
             {
@@ -70,12 +70,12 @@ namespace Game.Processes
             }
         }
 
-        public static void KillProcess<TProcess>() where TProcess : IProcess
+        public static void KillProcess(Type processType)
         {
-            var processes = Process.GetProcesses().Where(c=> GetProcessesIds<TProcess>().Contains(c.Id)).ToList();
-            foreach(var process in processes)
+            var processes = Process.GetProcesses().Where(c => GetProcessesIds(processType).Contains(c.Id)).ToList();
+            foreach (var process in processes)
             {
-                _OpenProcesses.Remove(process.Id,out _);
+                _OpenProcesses.Remove(process.Id, out _);
                 process.Kill();
             }
         }
@@ -108,10 +108,10 @@ namespace Game.Processes
             await processInstance.StartAsync();
         }
 
-        private static ICollection<int> GetProcessesIds<TProcess>() where TProcess : IProcess
+        private static ICollection<int> GetProcessesIds(Type processType) 
         {
             return _OpenProcesses
-                .Where(c => c.Value == typeof(TProcess).Name)
+                .Where(c => c.Value == processType.Name)
                 .Select(c => c.Key).ToList();
         }
 
@@ -137,7 +137,6 @@ namespace Game.Processes
             IMPERSONATE = (0x0100),
             DIRECT_IMPERSONATION = (0x0200)
         }
-
     }
 }
 
