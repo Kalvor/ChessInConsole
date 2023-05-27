@@ -1,10 +1,8 @@
-﻿using Game.Data.Enums;
-
-namespace Game.Tools
+﻿namespace Game.Tools
 {
     public sealed class InputReader
     {
-        public GameInvitationChoice GetGameInvitationChoice() { return default; }
+        //public GameInvitationChoice GetGameInvitationChoice() { return default; }
         //public PlayerMetadata GetPlayerMetadata() { return null; }
         public Task ListenForKey(ConsoleKey key)
         {
@@ -13,6 +11,16 @@ namespace Game.Tools
 
             }
             return Task.CompletedTask;
+        }
+
+        public string ReadString()
+        {
+            return Console.ReadLine()!;
+        }
+
+        public int ReadInt()
+        {
+            return int.Parse(Console.ReadLine()!);
         }
     }
 }

@@ -1,27 +1,28 @@
-﻿using Game.Tools;
+﻿using Game.Processes;
+using Game.Tools;
 
-namespace Game.Threads.GameThreads
+namespace Game.Jobs.Implementations
 {
-    public sealed class ProgramHostThread : BaseGameThread, IGameThread
+    public sealed class ProgramExitListenerJob : BaseGameJob
     {
         private readonly InputReader _InputReader;
-        public ProgramHostThread(CancellationPool cancellationPool, InputReader inputReader) : base(cancellationPool)
+        public ProgramExitListenerJob(CancellationPool cancellationPool, InputReader inputReader) : base(cancellationPool)
         {
             _InputReader = inputReader;
         }
 
-        public override Task RunAsync()
+        public override async Task RunAsync()
         {
-            base.HostRun(() =>
+            await base.HostRun(() =>
             {
                 Task listenerTask = _InputReader.ListenForKey(ConsoleKey.Escape);
                 if (listenerTask.IsCompleted)
                 {
                     _CancellationPool.PauseAll();
+                    ProcessesOrchestrator.KillAllProcesses();
                 }
                 return Task.CompletedTask;
             });
-            return Task.CompletedTask;
         }
     }
 }

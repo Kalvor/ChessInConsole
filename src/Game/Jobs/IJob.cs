@@ -1,8 +1,7 @@
-﻿namespace Game.Threads
+﻿namespace Game.Jobs
 {
-    public interface IGameThread
+    public interface IJob
     {
-        bool IsCancaled { get; }
         bool IsPaused { get; }
         Task RunAsync();
         Task StopAsync();
