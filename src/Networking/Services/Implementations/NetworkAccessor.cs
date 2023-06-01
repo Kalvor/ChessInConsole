@@ -41,10 +41,6 @@ namespace Networking.Services.Implementations
 
                     return result;
                 }
-                catch (OperationCanceledException)
-                {
-                    return default;
-                }
                 catch (Exception) 
                 { 
                     continue; 
@@ -70,10 +66,6 @@ namespace Networking.Services.Implementations
 
                     return result;
                 }
-                catch (OperationCanceledException) 
-                {
-                    return default;
-                }
                 catch(Exception) 
                 {
                     continue; 
@@ -95,7 +87,6 @@ namespace Networking.Services.Implementations
         private async Task<Socket> GetSocketConnectionAsync()
         {
             TcpListener listener = new TcpListener(GetLocalHost().Address, 8001);
-            listener.ExclusiveAddressUse = true;
             listener.Start();
             Socket s = await listener.AcceptSocketAsync();
             listener.Stop();
