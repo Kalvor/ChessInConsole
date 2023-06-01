@@ -22,7 +22,9 @@ try
 		JsonConvert.DeserializeObject<ConcurrentDictionary<int, string>>(args[1]) :
 		new ConcurrentDictionary<int, string>();
 
-    await ProcessesOrchestrator.StartProcessByInternalIdAsync(processId, currentProcesses, serviceProvider);
+    Kernel32_Dll_Import.ShowWindow(Kernel32_Dll_Import.GetConsoleWindow(), (int)WindowVisibilityEnum.SW_SHOW);
+
+	await ProcessesOrchestrator.StartProcessByInternalIdAsync(processId, currentProcesses, serviceProvider, args.Skip(2).ToArray()) ;
 }
 catch (Exception)
 {

@@ -6,6 +6,7 @@ using Game.Tools;
 using Networking.Models;
 using Networking.Services.Interfaces;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace Game.Processes.Implementations
 {
@@ -44,7 +45,7 @@ namespace Game.Processes.Implementations
             _Invitation.ClockAdd = _InputReader.ReadInt();
 
             _MessagePrinter.PrintText(DisplayTable.Input_PiecesColor_Create_Invitation);
-            _Invitation.PiecesColor = _OptionsPicker.PickOptions(
+            _Invitation.PiecesColor = (PiecesColorEnum)_OptionsPicker.PickOptions(
                 DisplayTable.Input_PiecesColorBlack_Create_Invitation,
                 DisplayTable.Input_PiecesColorWhite_Create_Invitation,
                 DisplayTable.Input_PiecesColorRandom_Create_Invitation
@@ -53,8 +54,17 @@ namespace Game.Processes.Implementations
             _MessagePrinter.PrintText(DisplayTable.Input_ReceiverIP_CreateInvitation);
             _Invitation.InvitorHost = new Networking.Data.Host(_InputReader.ReadString());
 
-            await _NetworkAccessor.SendDataAsync(_Invitation.InvitorHost, JsonConvert.SerializeObject(_Invitation), default);
-            _MessagePrinter.PrintText(DisplayTable.Input_Listening_CreateInvitation);
+            try
+            {
+                _MessagePrinter.PrintText(DisplayTable.Input_Listening_CreateInvitation);
+                await _NetworkAccessor.SendDataAsync(_Invitation.InvitorHost, JsonConvert.SerializeObject(_Invitation), default);
+            }
+            catch(Exception e)
+            {
+                _MessagePrinter.PrintText(DisplayTable.Input_Error_CreateInvitation);
+                Thread.Sleep(5000);
+                return;
+            }
 
             var data = await _NetworkAccessor.ListenFromDataAsync<GameInvitationResponse>(_Invitation.InvitorHost, default);
             if(data.Accepted)

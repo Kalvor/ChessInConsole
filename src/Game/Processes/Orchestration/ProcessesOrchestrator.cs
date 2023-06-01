@@ -11,11 +11,11 @@ namespace Game.Processes.Orchestration
     {
         public static ConcurrentDictionary<int, string> _OpenProcesses = new ConcurrentDictionary<int, string>();
 
-        public static void RedirectProcessControl<TCurrentProcess, TTargetProcess>()
+        public static void RedirectProcessControl<TCurrentProcess, TTargetProcess>(params object[] targetAdditionalData)
             where TCurrentProcess : IProcess
             where TTargetProcess : IProcess
         {
-            StartProcess<TTargetProcess>();
+            StartProcess<TTargetProcess>(targetAdditionalData);
             Kernel32_Dll_Import.ShowWindow(Kernel32_Dll_Import.GetConsoleWindow(), (int)WindowVisibilityEnum.SW_HIDE);
             SuspendProcess<TCurrentProcess>();
             Kernel32_Dll_Import.ShowWindow(Kernel32_Dll_Import.GetConsoleWindow(), (int)WindowVisibilityEnum.SW_SHOW);
@@ -28,7 +28,7 @@ namespace Game.Processes.Orchestration
             ResumeProcess<TTargetProcess>();
         }
 
-        public static async Task StartProcessByInternalIdAsync(string id, ConcurrentDictionary<int, string> openProcesses, IServiceProvider services)
+        public static async Task StartProcessByInternalIdAsync(string id, ConcurrentDictionary<int, string> openProcesses, IServiceProvider services, string[] objectJsonData)
         {
             foreach (var oP in openProcesses)
             {
@@ -43,10 +43,10 @@ namespace Game.Processes.Orchestration
                 .First();
             _OpenProcesses.TryAdd(Process.GetCurrentProcess().Id, processType.Name);
             var processInstance = (IProcess)services.GetService(processType)!;
-            await processInstance.StartAsync();
+            await processInstance.StartAsync(objectJsonData);
         }
 
-        private static void StartProcess<TProcess>() where TProcess : IProcess
+        private static void StartProcess<TProcess>(params object[] additionalData ) where TProcess : IProcess
         {
             var processId = (string)typeof(TProcess).GetField("InternalId", BindingFlags.Public | BindingFlags.Static)!.GetValue(null)!;
             ProcessStartInfo p_info = new ProcessStartInfo();
@@ -54,6 +54,10 @@ namespace Game.Processes.Orchestration
             p_info.FileName = @"Game.exe";
             p_info.ArgumentList.Add(processId);
             p_info.ArgumentList.Add(JsonConvert.SerializeObject(_OpenProcesses));
+            foreach(var obj in additionalData)
+            {
+                p_info.ArgumentList.Add(JsonConvert.SerializeObject(obj));
+            }
             var process = Process.Start(p_info);
             _OpenProcesses.TryAdd(process.Id, typeof(TProcess).Name);
         }

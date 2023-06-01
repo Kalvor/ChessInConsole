@@ -66,6 +66,7 @@ namespace Networking.Services.Implementations
         public async Task SendDataAsync(Host reciever, string jsonMessage, CancellationToken ct)
         {
             TcpClient client = new TcpClient();
+            client.SendTimeout = 1024;
             await client.ConnectAsync(reciever.Address, 8001,ct);
             using Stream dataStream = client.GetStream();
             byte[] data = Encoding.ASCII.GetBytes(jsonMessage);

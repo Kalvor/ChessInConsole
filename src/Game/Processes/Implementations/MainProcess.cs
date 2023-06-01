@@ -36,13 +36,13 @@ namespace Game.Processes.Implementations
                 );
 
                 _JobsCancellation.PauseJob<InvitationRequestListenerJob>();
-                Action processRedirectionAction = pickedOption switch
+                Action<object[]> processRedirectionAction = pickedOption switch
                 {
                     0 => ProcessesOrchestrator.RedirectProcessControl<MainProcess, LocalChessGameProcess>,
                     1 => ProcessesOrchestrator.RedirectProcessControl<MainProcess, InvitationCreatingProcess>,
                     _ => throw new NotImplementedException()
                 };
-                processRedirectionAction();
+                processRedirectionAction(Array.Empty<object>());
 
                 _JobsCancellation.ResumeJob<InvitationRequestListenerJob>();
                 _MessagePrinter.ClearText(DisplayTable.MenuOption_Main_1);

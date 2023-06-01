@@ -1,23 +1,22 @@
-﻿using Networking.Models;
+﻿using Game.Processes.Implementations;
+using Game.Processes.Orchestration;
+using Networking.Models;
 using Networking.Services.Interfaces;
 
 namespace Game.Jobs.Implementations
 {
     public sealed class InvitationRequestListenerJob : BaseGameJob
     {
-        private GameInvitation _GameInvitation { get; set; }
-        public InvitationRequestListenerJob(JobsCancellationPool cancellationPool) : base(cancellationPool)
+        private readonly INetworkAccessor _NetworkAccessor;
+        public InvitationRequestListenerJob(JobsCancellationPool cancellationPool, INetworkAccessor networkAccessor) : base(cancellationPool)
         {
+            _NetworkAccessor = networkAccessor;
         }
 
         public override async Task JobMethodAsync()
         {
-            _GameInvitation = new GameInvitation();
-
-            //var invitation = await _NetDataReciever.ListenForGameInvitationAsync();
-
-            Thread.Sleep(5000);
-            //Console.WriteLine("Mam zapro");
+            var invitation = await _NetworkAccessor.ListenFromDataAsync<GameInvitation>(this.CancellationToken);
+            ProcessesOrchestrator.RedirectProcessControl<MainProcess, InvitationHandlingProcess>(invitation);
         }
     }
 }

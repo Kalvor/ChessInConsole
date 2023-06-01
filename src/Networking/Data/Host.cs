@@ -1,14 +1,17 @@
-﻿using System.Net;
+﻿using Newtonsoft.Json;
+using System.Net;
 
 namespace Networking.Data
 {
     public sealed class Host
     {
-        public IPAddress Address { get; }
+        [JsonIgnore]
+        public IPAddress Address => IPAddress.Parse(Ip);
+        public string Ip { get; }
 
         public Host(string ip)
         {
-            Address = IPAddress.Parse(ip);
+            Ip = ip;
         }
     }
 }

@@ -10,9 +10,9 @@ namespace Game.Processes
         {
         }
 
-        public override async Task StartAsync()
+        public override async Task StartAsync(string[] processJsonData)
         {
-            await base.StartAsync();
+            await base.StartAsync(processJsonData);
             ProcessesOrchestrator.ReturnProcessControl<MainProcess>();
         }
     }
