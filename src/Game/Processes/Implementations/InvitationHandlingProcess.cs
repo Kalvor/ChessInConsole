@@ -16,7 +16,10 @@ namespace Game.Processes.Implementations
 
         public override Task ProcessMethodAsync()
         {
-            throw new NotImplementedException();
+            Console.WriteLine(_ProcessJsonData[0]);
+            Console.ReadLine();
+            return Task.CompletedTask;
+            // throw new NotImplementedException();
         }
     }
 }

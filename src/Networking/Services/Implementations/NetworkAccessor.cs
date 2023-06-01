@@ -75,7 +75,7 @@ namespace Networking.Services.Implementations
             client.SendTimeout = 1024;
             await client.ConnectAsync(reciever.Address, 8001,ct);
             using Stream dataStream = client.GetStream();
-            byte[] data = Encoding.ASCII.GetBytes("");
+            byte[] data = Encoding.ASCII.GetBytes(jsonMessage);
             await dataStream.WriteAsync(data, 0, data.Length,ct);
             client.Close();
         }
