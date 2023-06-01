@@ -19,6 +19,8 @@
         public static DisplayText Input_Error_CreateInvitation => DisplayText.AtCenter("Error sending data to selected host", ConsoleColor.DarkMagenta, ConsoleColor.Black, 13);
         public static DisplayText Input_Declined_CreateInvitation => DisplayText.AtCenter("User declined your invitation :(", ConsoleColor.DarkMagenta, ConsoleColor.Black, 13);
 
-
+        public static DisplayText Header_Sub_ResolveInvitation => DisplayText.AtCenter("Game invitation acceptation", ConsoleColor.DarkBlue, ConsoleColor.Black, 2);
+        public static DisplayText Input_Accept_Invitation => DisplayText.AtCenter("Accept", ConsoleColor.Red, ConsoleColor.DarkYellow, 3);
+        public static DisplayText Input_Decline_Invitation => DisplayText.AtCenter("Decline", ConsoleColor.Red, ConsoleColor.DarkYellow, 4);
     }
 }

@@ -9,7 +9,8 @@ namespace Networking.Models
         public int ClockBase { get; set; }
         public int ClockAdd { get; set; }
         public string InvitorName { get; set; }
-        public Host InvitorHost { get; set; }
+        public Host? InvitorHost { get; set; }
+        public Host? InvitedHost { get; set; }
     }
 
     public enum PiecesColorEnum
