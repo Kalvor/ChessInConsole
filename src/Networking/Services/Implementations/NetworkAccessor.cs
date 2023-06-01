@@ -20,11 +20,11 @@ namespace Networking.Services.Implementations
                 .First().Address.ToString());
         }
 
-        public async Task<TData> ListenFromDataAsync<TData>(Host sender, CancellationToken ct)
+        public async Task<TData?> ListenFromDataAsync<TData>(Host sender)
         {
-            while (!ct.IsCancellationRequested)
+            while (true)
             {
-                var connectedSocket = await GetSocketConnectionAsync(ct);
+                var connectedSocket = await GetSocketConnectionAsync();
                 try
                 {
                     if(!((IPEndPoint)connectedSocket.RemoteEndPoint!).Address.ToString().StartsWith(sender.Address.ToString()))
@@ -32,7 +32,7 @@ namespace Networking.Services.Implementations
                         continue;
                     }
                     byte[] data = new byte[1024];
-                    await connectedSocket.ReceiveAsync(data, ct);
+                    await connectedSocket.ReceiveAsync(data);
                     connectedSocket.Close();
                     var dataString = Encoding.ASCII.GetString(data);
                     TData result = JsonConvert.DeserializeObject<TData>(dataString);
@@ -41,21 +41,27 @@ namespace Networking.Services.Implementations
 
                     return result;
                 }
-                catch (Exception) { continue; }
+                catch (OperationCanceledException)
+                {
+                    return default;
+                }
+                catch (Exception) 
+                { 
+                    continue; 
+                }
             }
-            throw new Exception();
         }
 
-        public async Task<TData> ListenFromDataAsync<TData>(CancellationToken ct)
+        public async Task<TData?> ListenFromDataAsync<TData>()
         {
-            while (!ct.IsCancellationRequested) 
+            while (true) 
             {
-                var connectedSocket = await GetSocketConnectionAsync(ct);
+                var connectedSocket = await GetSocketConnectionAsync();
                 try
                 {
 
                     byte[] data = new byte[1024];
-                    await connectedSocket.ReceiveAsync(data, ct);
+                    await connectedSocket.ReceiveAsync(data);
                     connectedSocket.Close();
                     var dataString = Encoding.ASCII.GetString(data);
                     TData result = JsonConvert.DeserializeObject<TData>(dataString);
@@ -64,28 +70,34 @@ namespace Networking.Services.Implementations
 
                     return result;
                 }
-                catch (Exception) { continue; }
+                catch (OperationCanceledException) 
+                {
+                    return default;
+                }
+                catch(Exception) 
+                {
+                    continue; 
+                }
             }
-            throw new Exception();
         }
 
-        public async Task SendDataAsync(Host reciever, string jsonMessage, CancellationToken ct)
+        public async Task SendDataAsync(Host reciever, string jsonMessage)
         {
             TcpClient client = new TcpClient();
-            client.SendTimeout = 1024;
-            await client.ConnectAsync(reciever.Address, 8001,ct);
+            client.SendTimeout = 1000;
+            await client.ConnectAsync(reciever.Address, 8001);
             using Stream dataStream = client.GetStream();
             byte[] data = Encoding.ASCII.GetBytes(jsonMessage);
-            await dataStream.WriteAsync(data, 0, data.Length,ct);
+            await dataStream.WriteAsync(data, 0, data.Length);
             client.Close();
         }
 
-        private async Task<Socket> GetSocketConnectionAsync(CancellationToken ct)
+        private async Task<Socket> GetSocketConnectionAsync()
         {
             TcpListener listener = new TcpListener(GetLocalHost().Address, 8001);
             listener.ExclusiveAddressUse = true;
             listener.Start();
-            Socket s = await listener.AcceptSocketAsync(ct);
+            Socket s = await listener.AcceptSocketAsync();
             listener.Stop();
             return s;
         }

@@ -58,7 +58,7 @@ namespace Game.Processes.Implementations
             try
             {
                 _MessagePrinter.PrintText(DisplayTable.Input_Listening_CreateInvitation);
-                await _NetworkAccessor.SendDataAsync(_Invitation.InvitedHost, JsonConvert.SerializeObject(_Invitation), default);
+                await _NetworkAccessor.SendDataAsync(_Invitation.InvitedHost, JsonConvert.SerializeObject(_Invitation));
             }
             catch(Exception e)
             {
@@ -67,7 +67,7 @@ namespace Game.Processes.Implementations
                 return;
             }
 
-            var data = await _NetworkAccessor.ListenFromDataAsync<GameInvitationResponse>(_Invitation.InvitedHost, default);
+            var data = await _NetworkAccessor.ListenFromDataAsync<GameInvitationResponse>(_Invitation.InvitedHost);
             if(data.Accepted)
             {
                 ProcessesOrchestrator.RedirectProcessControl<InvitationCreatingProcess, OnlineChessGameProcess>(_Invitation);
