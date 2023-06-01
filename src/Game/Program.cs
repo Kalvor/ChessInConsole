@@ -10,14 +10,22 @@ services.AddNetworkingLayer();
 services.AddGameServices();
 IServiceProvider serviceProvider = services.BuildServiceProvider();
 
-var processId = args.Length > 0 ? 
-    args[0] : 
-    "0";
-var currentProcesses = args.Length > 1 ? 
-    JsonConvert.DeserializeObject<ConcurrentDictionary<int, string>>(args[1]) : 
-    new ConcurrentDictionary<int, string>();
+try
+{
+	var processId = args.Length > 0 ?
+		args[0] :
+		"0";
+	var currentProcesses = args.Length > 1 ?
+		JsonConvert.DeserializeObject<ConcurrentDictionary<int, string>>(args[1]) :
+		new ConcurrentDictionary<int, string>();
 
-await ProcessesOrchestrator.StartProcessByInternalIdAsync(processId, currentProcesses, serviceProvider);
+	await ProcessesOrchestrator.StartProcessByInternalIdAsync(processId, currentProcesses, serviceProvider);
+}
+catch (Exception)
+{
+	ProcessesOrchestrator.ReturnControllToMain();
+    throw;
+}
 
 
 

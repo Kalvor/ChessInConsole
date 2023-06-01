@@ -11,11 +11,10 @@ namespace Game.Processes
             _Jobs = jobs.Where(c=> JobTypesToHost.Contains(c.GetType()));
         }
 
-        public virtual Task StartAsync()
+        public virtual async Task StartAsync()
         {
             var jobsStarts = _Jobs.Select(c => Task.Run(()=>c.RunAsync())).ToList();
-            ProcessMethodAsync();
-            return Task.CompletedTask;
+            await ProcessMethodAsync();
         }
 
         public abstract Task ProcessMethodAsync();

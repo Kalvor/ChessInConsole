@@ -18,10 +18,9 @@ namespace Game.Processes.Orchestration
             KillProcess(typeof(TProcess));
         }
 
-        public static void ReturnControllToMain(Type currentProcessType)
+        public static void ReturnControllToMain()
         {
             ResumeProcess<MainProcess>();
-            KillProcess(currentProcessType);
         }
 
         public static async Task StartProcessByInternalIdAsync(string id, ConcurrentDictionary<int, string> openProcesses, IServiceProvider services)
