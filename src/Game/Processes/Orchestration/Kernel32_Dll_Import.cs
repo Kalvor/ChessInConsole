@@ -15,5 +15,11 @@ namespace Game.Processes.Orchestration
 
         [DllImport("kernel32", CharSet = CharSet.Auto, SetLastError = true)]
         internal static extern bool CloseHandle(IntPtr handle);
+
+        [DllImport("kernel32.dll")]
+        internal static extern IntPtr GetConsoleWindow();
+
+        [DllImport("user32.dll")]
+        internal static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
     }
 }

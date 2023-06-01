@@ -11,16 +11,21 @@ namespace Game.Processes.Orchestration
     {
         public static ConcurrentDictionary<int, string> _OpenProcesses = new ConcurrentDictionary<int, string>();
 
-        public static void RedirectProcessControl<TProcess>() where TProcess : IProcess
+        public static void RedirectProcessControl<TCurrentProcess, TTargetProcess>()
+            where TCurrentProcess : IProcess
+            where TTargetProcess : IProcess
         {
-            StartProcess<TProcess>();
-            SuspendProcess<MainProcess>();
-            KillProcess(typeof(TProcess));
+            StartProcess<TTargetProcess>();
+            Kernel32_Dll_Import.ShowWindow(Kernel32_Dll_Import.GetConsoleWindow(), (int)WindowVisibilityEnum.SW_HIDE);
+            SuspendProcess<TCurrentProcess>();
+            Kernel32_Dll_Import.ShowWindow(Kernel32_Dll_Import.GetConsoleWindow(), (int)WindowVisibilityEnum.SW_SHOW);
+            KillProcess(typeof(TTargetProcess));
         }
 
-        public static void ReturnControllToMain()
+        public static void ReturnProcessControl<TTargetProcess>()
+            where TTargetProcess : IProcess
         {
-            ResumeProcess<MainProcess>();
+            ResumeProcess<TTargetProcess>();
         }
 
         public static async Task StartProcessByInternalIdAsync(string id, ConcurrentDictionary<int, string> openProcesses, IServiceProvider services)

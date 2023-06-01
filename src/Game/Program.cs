@@ -1,4 +1,5 @@
 ﻿using Game;
+using Game.Processes.Implementations;
 using Game.Processes.Orchestration;
 using Microsoft.Extensions.DependencyInjection;
 using Networking;
@@ -18,12 +19,13 @@ try
 	var currentProcesses = args.Length > 1 ?
 		JsonConvert.DeserializeObject<ConcurrentDictionary<int, string>>(args[1]) :
 		new ConcurrentDictionary<int, string>();
+    Kernel32_Dll_Import.ShowWindow(Kernel32_Dll_Import.GetConsoleWindow(), 5);
 
-	await ProcessesOrchestrator.StartProcessByInternalIdAsync(processId, currentProcesses, serviceProvider);
+    await ProcessesOrchestrator.StartProcessByInternalIdAsync(processId, currentProcesses, serviceProvider);
 }
 catch (Exception)
 {
-	ProcessesOrchestrator.ReturnControllToMain();
+	ProcessesOrchestrator.ReturnProcessControl<MainProcess>();
     throw;
 }
 

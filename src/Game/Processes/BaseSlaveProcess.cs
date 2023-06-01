@@ -13,7 +13,7 @@ namespace Game.Processes
         public override async Task StartAsync()
         {
             await base.StartAsync();
-            ProcessesOrchestrator.ReturnControllToMain();
+            ProcessesOrchestrator.ReturnProcessControl<MainProcess>();
         }
     }
 }

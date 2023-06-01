@@ -12,7 +12,7 @@ namespace Game.Processes.Implementations
         private readonly MessagePrinter _MessagePrinter;
         private readonly OptionsPicker _OptionsPicker;
         private readonly JobsCancellationPool _JobsCancellation;
-        private GameInvitation _Invitation;
+        private GameInvitation _Invitation = new GameInvitation();
         public InvitationCreatingProcess(IEnumerable<IJob> jobs, MessagePrinter messagePrinter, OptionsPicker optionsPicker, JobsCancellationPool jobsCancellation) : base(jobs)
         {
             _MessagePrinter = messagePrinter;
