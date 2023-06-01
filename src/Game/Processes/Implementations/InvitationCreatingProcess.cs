@@ -75,6 +75,7 @@ namespace Game.Processes.Implementations
             else
             {
                 _MessagePrinter.PrintText(DisplayTable.Input_Declined_CreateInvitation);
+                Thread.Sleep(5000);
             }
 
         }

@@ -27,7 +27,7 @@ namespace Networking.Services.Implementations
                 var connectedSocket = await GetSocketConnectionAsync(ct);
                 try
                 {
-                    if(((IPEndPoint)connectedSocket.RemoteEndPoint!).Address != sender.Address)
+                    if(!((IPEndPoint)connectedSocket.RemoteEndPoint!).Address.ToString().StartsWith(sender.Address.ToString()))
                     {
                         continue;
                     }
