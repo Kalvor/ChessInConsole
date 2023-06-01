@@ -1,8 +1,11 @@
 ﻿using Game.Display;
 using Game.Jobs;
 using Game.Jobs.Implementations;
+using Game.Processes.Orchestration;
 using Game.Tools;
 using Networking.Models;
+using Networking.Services.Interfaces;
+using Newtonsoft.Json;
 
 namespace Game.Processes.Implementations
 {
@@ -11,33 +14,34 @@ namespace Game.Processes.Implementations
         public static string InternalId = "1";
         private readonly MessagePrinter _MessagePrinter;
         private readonly OptionsPicker _OptionsPicker;
-        private readonly JobsCancellationPool _JobsCancellation;
-        private GameInvitation _Invitation = new GameInvitation();
-        public InvitationCreatingProcess(IEnumerable<IJob> jobs, MessagePrinter messagePrinter, OptionsPicker optionsPicker, JobsCancellationPool jobsCancellation) : base(jobs)
+        private readonly InputReader _InputReader;
+        private readonly INetworkAccessor _NetworkAccessor;
+        private GameInvitation _Invitation = new();
+        public InvitationCreatingProcess(IEnumerable<IJob> jobs, MessagePrinter messagePrinter, OptionsPicker optionsPicker, InputReader inputReader, INetworkAccessor networkAccessor) : base(jobs)
         {
             _MessagePrinter = messagePrinter;
             _OptionsPicker = optionsPicker;
-            _JobsCancellation = jobsCancellation;
+            _InputReader = inputReader;
+            _NetworkAccessor = networkAccessor;
         }
 
         public override IEnumerable<Type> JobTypesToHost => new[]
         {
-            typeof(InvitationRequestListenerJob)
+            typeof(IJob)
         };
 
-        public override Task ProcessMethodAsync()
+        public override async Task ProcessMethodAsync()
         {
-            _Invitation = new GameInvitation();
             _MessagePrinter.PrintText(DisplayTable.Header_Main);
             _MessagePrinter.PrintText(DisplayTable.Header_Sub_CreateInvitation);
             _MessagePrinter.PrintText(DisplayTable.Input_Name_CreateInvitation);
-            _Invitation.InvitorName = Console.ReadLine();
+            _Invitation.InvitorName = _InputReader.ReadString();
 
             _MessagePrinter.PrintText(DisplayTable.Input_ClockBase_CreateInvitation);
-            _Invitation.ClockBase = int.Parse(Console.ReadLine());
+            _Invitation.ClockBase = _InputReader.ReadInt();
 
             _MessagePrinter.PrintText(DisplayTable.Input_ClockAdd_CreateInvitation);
-            _Invitation.ClockAdd = int.Parse(Console.ReadLine());
+            _Invitation.ClockAdd = _InputReader.ReadInt();
 
             _MessagePrinter.PrintText(DisplayTable.Input_PiecesColor_Create_Invitation);
             _Invitation.PiecesColor = _OptionsPicker.PickOptions(
@@ -47,9 +51,21 @@ namespace Game.Processes.Implementations
              );
 
             _MessagePrinter.PrintText(DisplayTable.Input_ReceiverIP_CreateInvitation);
-            _Invitation.InvitorHost = new Networking.Data.Host(Console.ReadLine());
+            _Invitation.InvitorHost = new Networking.Data.Host(_InputReader.ReadString());
 
-            return Task.CompletedTask;
+            await _NetworkAccessor.SendDataAsync(_Invitation.InvitorHost, JsonConvert.SerializeObject(_Invitation), default);
+            _MessagePrinter.PrintText(DisplayTable.Input_Listening_CreateInvitation);
+
+            var data = await _NetworkAccessor.ListenFromDataAsync<GameInvitationResponse>(_Invitation.InvitorHost, default);
+            if(data.Accepted)
+            {
+                ProcessesOrchestrator.RedirectProcessControl<InvitationCreatingProcess, OnlineChessGameProcess>();
+            }
+            else
+            {
+                _MessagePrinter.PrintText(DisplayTable.Input_Declined_CreateInvitation);
+            }
+
         }
     }
 }

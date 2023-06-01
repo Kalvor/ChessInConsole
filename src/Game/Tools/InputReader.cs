@@ -18,7 +18,16 @@
 
         public int ReadInt()
         {
-            return int.Parse(Console.ReadLine()!);
+            do
+            {
+                var x = Console.ReadLine();
+                if (!int.TryParse(x, out int result))
+                {
+                    continue;
+                }
+                return result;
+            }
+            while (true);
         }
 
         public ConsoleKey ReadKeyPressed()

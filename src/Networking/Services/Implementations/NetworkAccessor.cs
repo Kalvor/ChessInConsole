@@ -20,17 +20,47 @@ namespace Networking.Services.Implementations
                 .First().Address.ToString());
         }
 
-        public async Task<byte[]> ListenFromData(CancellationToken ct)
+        public async Task<TData> ListenFromDataAsync<TData>(Host sender, CancellationToken ct)
         {
-            TcpListener listener = new TcpListener(GetLocalHost().Address, 8001);
-            listener.ExclusiveAddressUse = true;
-            listener.Start();
-            Socket s = await listener.AcceptSocketAsync(ct);
-            byte[] data = new byte[1024];
-            await s.ReceiveAsync(data,ct);
-            s.Close();
-            listener.Stop();
-            return data;
+            while (ct.IsCancellationRequested)
+            {
+                var connectedSocket = await GetSocketConnectionAsync(ct);
+                try
+                {
+                    if(((IPEndPoint)connectedSocket.RemoteEndPoint!).Address != sender.Address)
+                    {
+                        continue;
+                    }
+                    byte[] data = new byte[1024];
+                    await connectedSocket.ReceiveAsync(data, ct);
+                    connectedSocket.Close();
+                    var dataString = Encoding.ASCII.GetString(data);
+                    TData result = JsonConvert.DeserializeObject<TData>(dataString);
+                    return result;
+                }
+                catch (Exception) { continue; }
+            }
+            throw new Exception();
+        }
+
+        public async Task<TData> ListenFromDataAsync<TData>(CancellationToken ct)
+        {
+            while (ct.IsCancellationRequested) 
+            {
+                var connectedSocket = await GetSocketConnectionAsync(ct);
+                try
+                {
+
+                    byte[] data = new byte[1024];
+                    await connectedSocket.ReceiveAsync(data, ct);
+                    connectedSocket.Close();
+                    var dataString = Encoding.ASCII.GetString(data);
+                    TData result = JsonConvert.DeserializeObject<TData>(dataString);
+                    return result;
+                }
+                catch (Exception) { continue; }
+            }
+            throw new Exception();
         }
 
         public async Task SendDataAsync(Host reciever, string jsonMessage, CancellationToken ct)
@@ -41,6 +71,16 @@ namespace Networking.Services.Implementations
             byte[] data = Encoding.ASCII.GetBytes(jsonMessage);
             await dataStream.WriteAsync(data, 0, data.Length,ct);
             client.Close();
+        }
+
+        private async Task<Socket> GetSocketConnectionAsync(CancellationToken ct)
+        {
+            TcpListener listener = new TcpListener(GetLocalHost().Address, 8001);
+            listener.ExclusiveAddressUse = true;
+            listener.Start();
+            Socket s = await listener.AcceptSocketAsync(ct);
+            listener.Stop();
+            return s;
         }
     }
 }

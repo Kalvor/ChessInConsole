@@ -15,6 +15,8 @@
         public static DisplayText Input_PiecesColorWhite_Create_Invitation => DisplayText.New("White", ConsoleColor.Red, ConsoleColor.DarkYellow, new(10, 9));
         public static DisplayText Input_PiecesColorRandom_Create_Invitation => DisplayText.New("Random", ConsoleColor.Red, ConsoleColor.DarkYellow, new(10, 10));
         public static DisplayText Input_ReceiverIP_CreateInvitation => DisplayText.New("Reveiver IP : ", ConsoleColor.DarkMagenta, ConsoleColor.Black, new(10, 11));
+        public static DisplayText Input_Listening_CreateInvitation => DisplayText.AtCenter("Waiting for response...", ConsoleColor.DarkMagenta, ConsoleColor.Black, 12);
+        public static DisplayText Input_Declined_CreateInvitation => DisplayText.AtCenter("User declined your invitation :(", ConsoleColor.DarkMagenta, ConsoleColor.Black, 13);
 
 
     }

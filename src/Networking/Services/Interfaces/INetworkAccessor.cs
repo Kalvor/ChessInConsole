@@ -6,7 +6,8 @@ namespace Networking.Services.Interfaces
     {
         Host GetLocalHost();
         Task SendDataAsync(Host reciever, string jsonMessage, CancellationToken ct);
-        Task<byte[]> ListenFromData(CancellationToken ct);
+        Task<TData> ListenFromDataAsync<TData>(Host sender, CancellationToken ct);
+        Task<TData> ListenFromDataAsync<TData>(CancellationToken ct);
     }
 }
  

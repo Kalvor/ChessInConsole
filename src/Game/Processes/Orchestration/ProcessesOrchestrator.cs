@@ -51,12 +51,9 @@ namespace Game.Processes.Orchestration
             var processId = (string)typeof(TProcess).GetField("InternalId", BindingFlags.Public | BindingFlags.Static)!.GetValue(null)!;
             ProcessStartInfo p_info = new ProcessStartInfo();
             p_info.UseShellExecute = true;
-            p_info.CreateNoWindow = false;
-            p_info.WindowStyle = ProcessWindowStyle.Normal;
             p_info.FileName = @"Game.exe";
             p_info.ArgumentList.Add(processId);
             p_info.ArgumentList.Add(JsonConvert.SerializeObject(_OpenProcesses));
-
             var process = Process.Start(p_info);
             _OpenProcesses.TryAdd(process.Id, typeof(TProcess).Name);
         }
