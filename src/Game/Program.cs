@@ -13,8 +13,8 @@ IServiceProvider serviceProvider = services.BuildServiceProvider();
 
 try
 {
-	Console.WindowHeight = 60;
-	Console.WindowWidth = 200;
+	//Console.WindowHeight = 60;
+	//Console.WindowWidth = 200;
 	var processId = args.Length > 0 ?
 		args[0] :
 		"0";

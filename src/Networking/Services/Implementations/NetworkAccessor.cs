@@ -22,7 +22,7 @@ namespace Networking.Services.Implementations
 
         public async Task<TData> ListenFromDataAsync<TData>(Host sender, CancellationToken ct)
         {
-            while (ct.IsCancellationRequested)
+            while (!ct.IsCancellationRequested)
             {
                 var connectedSocket = await GetSocketConnectionAsync(ct);
                 try
@@ -36,6 +36,9 @@ namespace Networking.Services.Implementations
                     connectedSocket.Close();
                     var dataString = Encoding.ASCII.GetString(data);
                     TData result = JsonConvert.DeserializeObject<TData>(dataString);
+
+                    if (result == null) continue;
+
                     return result;
                 }
                 catch (Exception) { continue; }
@@ -45,7 +48,7 @@ namespace Networking.Services.Implementations
 
         public async Task<TData> ListenFromDataAsync<TData>(CancellationToken ct)
         {
-            while (ct.IsCancellationRequested) 
+            while (!ct.IsCancellationRequested) 
             {
                 var connectedSocket = await GetSocketConnectionAsync(ct);
                 try
@@ -56,6 +59,9 @@ namespace Networking.Services.Implementations
                     connectedSocket.Close();
                     var dataString = Encoding.ASCII.GetString(data);
                     TData result = JsonConvert.DeserializeObject<TData>(dataString);
+
+                    if (result == null) continue;
+
                     return result;
                 }
                 catch (Exception) { continue; }
@@ -69,7 +75,7 @@ namespace Networking.Services.Implementations
             client.SendTimeout = 1024;
             await client.ConnectAsync(reciever.Address, 8001,ct);
             using Stream dataStream = client.GetStream();
-            byte[] data = Encoding.ASCII.GetBytes(jsonMessage);
+            byte[] data = Encoding.ASCII.GetBytes("");
             await dataStream.WriteAsync(data, 0, data.Length,ct);
             client.Close();
         }
