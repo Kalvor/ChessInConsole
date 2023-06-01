@@ -3,6 +3,7 @@
     public abstract class BaseGameJob : IJob
     {
         public bool IsPaused => _CancellationPool.Pool[GetType()].IsCancellationRequested;
+        public CancellationToken CancellationToken => _CancellationPool.Pool[GetType()].Token;
 
         protected readonly JobsCancellationPool _CancellationPool;
         protected BaseGameJob(JobsCancellationPool cancellationPool)

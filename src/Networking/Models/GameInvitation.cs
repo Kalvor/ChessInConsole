@@ -5,6 +5,7 @@ namespace Networking.Models
     public sealed class GameInvitation
     {
         public Guid Id { get; } = Guid.NewGuid();
+        public int PiecesColor { get; set; }
         public int ClockBase { get; set; }
         public int ClockAdd { get; set; }
         public string InvitorName { get; set; }

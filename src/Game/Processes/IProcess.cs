@@ -6,6 +6,6 @@ namespace Game.Processes
     {
         public Task StartAsync();
         public Task ProcessMethodAsync();
-        public IEnumerable<IJob> Jobs { get; }
+        public IEnumerable<Type> JobTypesToHost { get; }
     }
 }

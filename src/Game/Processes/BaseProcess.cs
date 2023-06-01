@@ -4,15 +4,16 @@ namespace Game.Processes
 {
     public abstract class BaseProcess : IProcess
     {
-        public IEnumerable<IJob> Jobs { get; }
+        public abstract IEnumerable<Type> JobTypesToHost { get; }
+        private IEnumerable<IJob> _Jobs { get; }
         protected BaseProcess(IEnumerable<IJob> jobs)
         {
-            Jobs = jobs;
+            _Jobs = jobs.Where(c=> JobTypesToHost.Contains(c.GetType()));
         }
 
         public virtual Task StartAsync()
         {
-            var jobsStarts = Jobs.Select(c => Task.Run(()=>c.RunAsync())).ToList();
+            var jobsStarts = _Jobs.Select(c => Task.Run(()=>c.RunAsync())).ToList();
             ProcessMethodAsync();
             return Task.CompletedTask;
         }

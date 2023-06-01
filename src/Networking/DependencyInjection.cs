@@ -9,8 +9,6 @@ namespace Networking
         public static IServiceCollection AddNetworkingLayer(this IServiceCollection services)
         {
             services.AddTransient<INetworkAccessor, NetworkAccessor>();
-            services.AddTransient<INetworkDataReciever, NetworkDataReciever>();
-            services.AddTransient<INetworkDataSender, NetworkDataSender>();
 
             return services;
         }

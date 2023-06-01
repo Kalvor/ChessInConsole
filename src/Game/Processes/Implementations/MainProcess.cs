@@ -1,6 +1,7 @@
 ﻿using Game.Display;
 using Game.Jobs;
 using Game.Jobs.Implementations;
+using Game.Processes.Orchestration;
 using Game.Tools;
 
 namespace Game.Processes.Implementations
@@ -11,6 +12,7 @@ namespace Game.Processes.Implementations
         private readonly MessagePrinter _MessagePrinter;
         private readonly OptionsPicker _OptionsPicker;
         private readonly JobsCancellationPool _JobsCancellation;
+
         public MainProcess(IEnumerable<IJob> jobs, MessagePrinter messagePrinter, OptionsPicker optionsPicker, JobsCancellationPool jobsCancellation) : base(jobs)
         {
             _MessagePrinter = messagePrinter;
@@ -18,36 +20,34 @@ namespace Game.Processes.Implementations
             _JobsCancellation = jobsCancellation;
         }
 
+        public override IEnumerable<Type> JobTypesToHost => new[] 
+        { 
+            typeof(InvitationRequestListenerJob)
+        };
+
         public override Task ProcessMethodAsync()
         {
             while (true)
             {
-                _MessagePrinter.PrintText(DisplayTable.HeaderText_1);
+                _MessagePrinter.PrintText(DisplayTable.Header_Main);
                 int pickedOption = _OptionsPicker.PickOptions(
-                    DisplayTable.MainOption_1,
-                    DisplayTable.MainOption_2
+                    DisplayTable.MenuOption_Main_1,
+                    DisplayTable.MenuOption_Main_2
                 );
 
-                _JobsCancellation.PauseJob<InvitationListenerJob>();
+                _JobsCancellation.PauseJob<InvitationRequestListenerJob>();
                 Action processRedirectionAction = pickedOption switch
                 {
-                    0 => RedirectProcessControl<LocalChessGameProcess>,
-                    1 => RedirectProcessControl<InvitationCreatingProcess>,
+                    0 => ProcessesOrchestrator.RedirectProcessControl<LocalChessGameProcess>,
+                    1 => ProcessesOrchestrator.RedirectProcessControl<InvitationCreatingProcess>,
                     _ => throw new NotImplementedException()
                 };
                 processRedirectionAction();
 
-                _JobsCancellation.ResumeJob<InvitationListenerJob>();
-                _MessagePrinter.ClearText(DisplayTable.MainOption_1);
-                _MessagePrinter.ClearText(DisplayTable.MainOption_2);
+                _JobsCancellation.ResumeJob<InvitationRequestListenerJob>();
+                _MessagePrinter.ClearText(DisplayTable.MenuOption_Main_1);
+                _MessagePrinter.ClearText(DisplayTable.MenuOption_Main_2);
             }
-        }
-
-        private void RedirectProcessControl<TProcess>() where TProcess : IProcess
-        {
-            ProcessesOrchestrator.StartProcess<TProcess>();
-            ProcessesOrchestrator.SuspendProcess<MainProcess>();
-            ProcessesOrchestrator.KillProcess(typeof(TProcess));
         }
     }
 }

@@ -28,8 +28,5 @@ namespace Game.Tools
             Console.SetCursorPosition(text.Location.X, text.Location.Y);
             Console.Write(text.StringToPrint);
         }
-
-        public void DisplayInvitation(GameInvitation invitation) { }
-        public void AskForInvitationSendConfirmation() { }
     }
 }

@@ -9,10 +9,12 @@ namespace Game.Processes.Implementations
 {
     public sealed class LocalChessGameProcess : BaseSlaveProcess
     {
-        public static new string InternalId = "2";
+        public static string InternalId = "2";
         public LocalChessGameProcess(IEnumerable<IJob> jobs) : base(jobs)
         {
         }
+
+        public override IEnumerable<Type> JobTypesToHost => new[] { typeof(IJob) };
 
         public override Task ProcessMethodAsync()
         {

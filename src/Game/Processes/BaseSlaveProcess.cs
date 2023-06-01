@@ -1,5 +1,6 @@
 ﻿using Game.Jobs;
 using Game.Processes.Implementations;
+using Game.Processes.Orchestration;
 
 namespace Game.Processes
 {
@@ -12,13 +13,7 @@ namespace Game.Processes
         public override async Task StartAsync()
         {
             await base.StartAsync();
-            ReturnControllToMain();
-        }
-
-        public void ReturnControllToMain()
-        {
-            ProcessesOrchestrator.ResumeProcess<MainProcess>();
-            ProcessesOrchestrator.KillProcess(this.GetType());
+            ProcessesOrchestrator.ReturnControllToMain(this.GetType());
         }
     }
 }

@@ -1,6 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Game.Jobs
 {
@@ -12,18 +10,18 @@ namespace Game.Jobs
         }
 
         private ConcurrentDictionary<Type, CancellationTokenSource> _pool;
+
         public ConcurrentDictionary<Type, CancellationTokenSource> Pool => _pool;
 
         public void PauseJob<TGameJob>() where TGameJob : IJob
         {
-            _pool[typeof(TGameJob)].Cancel();
+            PauseJob(typeof(TGameJob));
         }
 
         public void PauseJob(Type type)
         {
             _pool[type].Cancel();
         }
-
 
         public void ResumeJob<TGameJob>() where TGameJob : IJob
         {

@@ -1,5 +1,6 @@
 ﻿using Networking.Data;
 using Networking.Services.Interfaces;
+using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -10,16 +11,7 @@ namespace Networking.Services.Implementations
 {
     internal sealed class NetworkAccessor : INetworkAccessor
     {
-        public IEnumerable<Host> GetAvaliableHosts()
-        {
-            return GetARPResult()
-                .Split(new char[] { '\n', '\r' })
-                .Select(c => c.Split(new char[] { ' ', '\t' }).Where(c=> !String.IsNullOrEmpty(c)).ToArray())       
-                .Where(c => c.Length == 3)
-                .Select(c => new Host(c[0]));
-        }
-
-        public Host GetLocalHost()
+        public Host GetLocalHost() //TODO
         {
             return new Host(NetworkInterface.GetAllNetworkInterfaces()
                 .Where(c => c.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 || c.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
@@ -28,76 +20,27 @@ namespace Networking.Services.Implementations
                 .First().Address.ToString());
         }
 
-        public async Task<string> RecieveDataAsync(Host sender)
+        public async Task<byte[]> ListenFromData(CancellationToken ct)
         {
-            bool isConnected = false;
-
-            using var socket = SetupSocket();
-            while (!isConnected)
-            {
-                try
-                {
-                    await socket.ConnectAsync(sender.Endpoint);
-                    isConnected = true;
-                }
-                catch (SocketException) { await Task.Delay(200); }
-                catch (Exception) { throw; }
-            }
-            ArraySegment<byte> buffer = new byte[socket.ReceiveBufferSize];
-            await socket.ReceiveAsync(buffer);
-            socket.Close();
-            return Encoding.ASCII.GetString(buffer);
+            TcpListener listener = new TcpListener(GetLocalHost().Address, 8001);
+            listener.ExclusiveAddressUse = true;
+            listener.Start();
+            Socket s = await listener.AcceptSocketAsync(ct);
+            byte[] data = new byte[1024];
+            await s.ReceiveAsync(data,ct);
+            s.Close();
+            listener.Stop();
+            return data;
         }
 
-        public async Task SendDataAsync(Host reciever, string jsonMessage)
+        public async Task SendDataAsync(Host reciever, string jsonMessage, CancellationToken ct)
         {
-            using var socket = SetupSocket();
-            socket.Bind(new IPEndPoint(IPAddress.Any, 23456));
-            socket.Listen(100);
-            using var client = await socket.AcceptAsync();
-            ArraySegment<byte> encodedMessage = !client.RemoteEndPoint!.ToString()!.StartsWith(reciever.Address.ToString())
-                ? Encoding.ASCII.GetBytes("ERROR : Currently host is not intending to send data to you.")
-                : Encoding.ASCII.GetBytes(jsonMessage);
-
-            await client.SendToAsync(encodedMessage, reciever.Endpoint);
-            
+            TcpClient client = new TcpClient();
+            await client.ConnectAsync(reciever.Address, 8001,ct);
+            using Stream dataStream = client.GetStream();
+            byte[] data = Encoding.ASCII.GetBytes(jsonMessage);
+            await dataStream.WriteAsync(data, 0, data.Length,ct);
             client.Close();
-            socket.Close();
-        }
-
-        private string GetARPResult()
-        {
-            Process p = null;
-            string output = string.Empty;
-
-            try
-            {
-                p = Process.Start(new ProcessStartInfo("arp", "-a")
-                {
-                    CreateNoWindow = true,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true
-                });
-
-                output = p.StandardOutput.ReadToEnd();
-
-                p.Close();
-            }
-            catch (Exception ex)
-            {
-                p.Close();
-                throw new Exception("IPInfo: Error Retrieving 'arp -a' Results", ex);
-            }
-
-            return output;
-        }
-        private Socket SetupSocket()
-        {
-            return new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
-            {
-                ReceiveTimeout = int.MaxValue,
-                SendTimeout = int.MaxValue
-            };
         }
     }
 }
