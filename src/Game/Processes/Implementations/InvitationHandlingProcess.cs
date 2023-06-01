@@ -23,7 +23,6 @@ namespace Game.Processes.Implementations
             _OptionsPicker = optionsPicker;
             _InputReader = inputReader;
             _NetworkAccessor = networkAccessor;
-            _Invitation = JsonConvert.DeserializeObject<GameInvitation>(_ProcessJsonData[0]);
         }
 
         public override IEnumerable<Type> JobTypesToHost => new[]
@@ -33,8 +32,8 @@ namespace Game.Processes.Implementations
 
         public override async Task ProcessMethodAsync()
         {
+            _Invitation = JsonConvert.DeserializeObject<GameInvitation>(_ProcessJsonData[0]);
             _Response.InvitationId = _Invitation.Id;
-
             _MessagePrinter.PrintText(DisplayTable.Header_Main);
             _MessagePrinter.PrintText(DisplayTable.Header_Sub_ResolveInvitation);
 
@@ -42,7 +41,8 @@ namespace Game.Processes.Implementations
                 DisplayTable.Input_Accept_Invitation,
                 DisplayTable.Input_Decline_Invitation
              ) == 0;
-            await _NetworkAccessor.SendDataAsync(_Invitation.InvitedHost, JsonConvert.SerializeObject(_Response), default);
+
+            await _NetworkAccessor.SendDataAsync(_Invitation.InvitorHost!, JsonConvert.SerializeObject(_Response), default);
             if(_Response.Accepted)
             {
                 ProcessesOrchestrator.RedirectProcessControl<InvitationHandlingProcess, OnlineChessGameProcess>(_Invitation);

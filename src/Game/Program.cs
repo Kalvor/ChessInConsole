@@ -24,10 +24,12 @@ try
 
     Kernel32_Dll_Import.ShowWindow(Kernel32_Dll_Import.GetConsoleWindow(), (int)WindowVisibilityEnum.SW_SHOW);
 
-	await ProcessesOrchestrator.StartProcessByInternalIdAsync(processId, currentProcesses, serviceProvider, args.Skip(2).ToArray()) ;
+	await ProcessesOrchestrator.StartProcessByInternalIdAsync(processId, currentProcesses, serviceProvider, args.Skip(2).ToArray());
 }
-catch (Exception)
+catch (Exception e )
 {
+	Console.WriteLine(e.Message);
+	Console.Read();
 	ProcessesOrchestrator.ReturnProcessControl<MainProcess>();
     throw;
 }
