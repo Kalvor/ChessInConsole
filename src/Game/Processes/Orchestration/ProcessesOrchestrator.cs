@@ -61,7 +61,11 @@ namespace Game.Processes.Orchestration
             {
                 p_info.ArgumentList.Add(JsonConvert.SerializeObject(obj));
             }
-            Process.Start(p_info);
+            var process = Process.Start(p_info);
+            while (!process!.HasExited) //Softlock preventing triggering process to close itself
+            {
+                
+            }
         }
 
         private static void SuspendProcess(int processId)
