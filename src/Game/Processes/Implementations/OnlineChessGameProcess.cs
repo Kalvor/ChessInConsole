@@ -17,6 +17,7 @@ namespace Game.Processes.Implementations
         public override Task ProcessMethodAsync()
         {
             Console.WriteLine("Online CHESS");
+            Console.ReadLine();
             return Task.CompletedTask;
         }
     }

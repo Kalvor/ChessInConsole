@@ -18,7 +18,7 @@ namespace Game.Jobs.Implementations
             var invitation = await _NetworkAccessor.ListenFromDataAsync<GameInvitation>(this.CancellationToken);
             if(invitation != null)
             {
-                ProcessesOrchestrator.RedirectProcessControl<MainProcess, InvitationHandlingProcess>(invitation);
+                ProcessesOrchestrator.RedirectProcessControl<InvitationHandlingProcess>(invitation);
             }
         }
     }

@@ -17,18 +17,20 @@ namespace Game.Processes.Implementations
         private readonly OptionsPicker _OptionsPicker;
         private readonly InputReader _InputReader;
         private readonly INetworkAccessor _NetworkAccessor;
+        private readonly JobsCancellationPool _JobsCancellationPool;
         private GameInvitation _Invitation = new();
-        public InvitationCreatingProcess(IEnumerable<IJob> jobs, MessagePrinter messagePrinter, OptionsPicker optionsPicker, InputReader inputReader, INetworkAccessor networkAccessor) : base(jobs)
+        public InvitationCreatingProcess(IEnumerable<IJob> jobs, MessagePrinter messagePrinter, OptionsPicker optionsPicker, InputReader inputReader, INetworkAccessor networkAccessor, JobsCancellationPool jobsCancellationPool) : base(jobs)
         {
             _MessagePrinter = messagePrinter;
             _OptionsPicker = optionsPicker;
             _InputReader = inputReader;
             _NetworkAccessor = networkAccessor;
+            _JobsCancellationPool = jobsCancellationPool;
         }
 
         public override IEnumerable<Type> JobTypesToHost => new[]
         {
-            typeof(IJob)
+            typeof(InvitationRequestListenerJob)
         };
 
         public override async Task ProcessMethodAsync()
@@ -67,10 +69,12 @@ namespace Game.Processes.Implementations
                 return;
             }
 
+            _JobsCancellationPool.PauseJob<InvitationRequestListenerJob>();
+
             var data = await _NetworkAccessor.ListenFromDataAsync<GameInvitationResponse>(_Invitation.InvitedHost, default);
             if(data.Accepted)
             {
-                ProcessesOrchestrator.RedirectProcessControl<InvitationCreatingProcess, OnlineChessGameProcess>(_Invitation);
+                ProcessesOrchestrator.RedirectProcessControl<OnlineChessGameProcess>(_Invitation);
             }
             else
             {

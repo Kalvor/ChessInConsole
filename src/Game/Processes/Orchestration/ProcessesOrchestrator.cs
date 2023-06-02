@@ -38,17 +38,15 @@ namespace Game.Processes.Orchestration
             await processInstance.StartAsync(objectJsonData);
         }
 
-        public static void RedirectProcessControl<TCurrentProcess, TTargetProcess>(params object[] targetAdditionalData)
-            where TCurrentProcess : IProcess
+        public static void RedirectProcessControl<TTargetProcess>(params object[] targetAdditionalData)
             where TTargetProcess : IProcess
         {
             nint currentProcessWindowHandle = Kernel32_Dll_Import.GetConsoleWindow();
             int currentProcessId = Process.GetCurrentProcess().Id;
-            StartProcess<TCurrentProcess,TTargetProcess>(currentProcessWindowHandle, currentProcessId, targetAdditionalData);
+            StartProcess<TTargetProcess>(currentProcessWindowHandle, currentProcessId, targetAdditionalData);
         }
 
-        private static void StartProcess<TCurrentProcess, TTargetProcess>(nint currentProcessWindowHandle, int currentProcessId, params object[] additionalData)
-            where TCurrentProcess : IProcess
+        private static void StartProcess<TTargetProcess>(nint currentProcessWindowHandle, int currentProcessId, params object[] additionalData)
             where TTargetProcess : IProcess
         {
             var targetProcessInternalId = (string)typeof(TTargetProcess).GetField("InternalId", BindingFlags.Public | BindingFlags.Static)!.GetValue(null)!;

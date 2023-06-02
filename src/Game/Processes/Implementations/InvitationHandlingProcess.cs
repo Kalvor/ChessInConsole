@@ -25,10 +25,7 @@ namespace Game.Processes.Implementations
             _NetworkAccessor = networkAccessor;
         }
 
-        public override IEnumerable<Type> JobTypesToHost => new[]
-        {
-            typeof(IJob)
-        };
+        public override IEnumerable<Type> JobTypesToHost => new[] { typeof(IJob) };
 
         public override async Task ProcessMethodAsync()
         {
@@ -45,7 +42,7 @@ namespace Game.Processes.Implementations
             await _NetworkAccessor.SendDataAsync(_Invitation.InvitorHost!, JsonConvert.SerializeObject(_Response), default);
             if(_Response.Accepted)
             {
-                ProcessesOrchestrator.RedirectProcessControl<MainProcess, OnlineChessGameProcess>(_Invitation);
+                ProcessesOrchestrator.RedirectProcessControl<OnlineChessGameProcess>(_Invitation);
             }
         }
     }
