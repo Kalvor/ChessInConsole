@@ -1,5 +1,6 @@
 ﻿using Game.Processes.Implementations;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Reflection;
@@ -19,13 +20,13 @@ namespace Game.Processes.Orchestration
             Kernel32_Dll_Import.ShowWindow(Kernel32_Dll_Import.GetConsoleWindow(), (int)WindowVisibilityEnum.SW_HIDE);
             SuspendProcess<TCurrentProcess>();
             Kernel32_Dll_Import.ShowWindow(Kernel32_Dll_Import.GetConsoleWindow(), (int)WindowVisibilityEnum.SW_SHOW);
-            KillProcess(typeof(TTargetProcess));
         }
 
-        public static void ReturnProcessControl<TTargetProcess>()
+        public static void ReturnProcessControl<TTargetProcess>(Type currentProcessType)
             where TTargetProcess : IProcess
         {
             ResumeProcess<TTargetProcess>();
+            KillProcess(currentProcessType);
         }
 
         public static async Task StartProcessByInternalIdAsync(string id, ConcurrentDictionary<int, string> openProcesses, IServiceProvider services, string[] objectJsonData)
@@ -41,8 +42,8 @@ namespace Game.Processes.Orchestration
                 .Where(c => c.IsAssignableTo(typeof(IProcess)) && !c.IsInterface && !c.IsAbstract)
                 .Where(c => (string)c.GetField("InternalId", BindingFlags.Public | BindingFlags.Static)!.GetValue(null)! == id)
                 .First();
-            _OpenProcesses.TryAdd(Process.GetCurrentProcess().Id, processType.Name);
             var processInstance = (IProcess)services.GetService(processType)!;
+            _OpenProcesses.TryAdd(Process.GetCurrentProcess().Id, processType.Name);
             await processInstance.StartAsync(objectJsonData);
         }
 
@@ -58,13 +59,13 @@ namespace Game.Processes.Orchestration
             {
                 p_info.ArgumentList.Add(JsonConvert.SerializeObject(obj));
             }
-            var process = Process.Start(p_info);
-            _OpenProcesses.TryAdd(process.Id, typeof(TProcess).Name);
+            Process.Start(p_info);
         }
 
         private static void SuspendProcess<TProcess>() where TProcess : IProcess
         {
-            var processes = Process.GetProcesses().Where(c => GetProcessesIds(typeof(TProcess)).Contains(c.Id)).ToList();
+            var processesIds = GetProcessesIds(typeof(TProcess));
+            var processes = Process.GetProcesses().Where(c => processesIds.Contains(c.Id)).ToList();
             foreach (var process in processes)
             {
                 foreach (ProcessThread thread in process.Threads)
@@ -80,7 +81,8 @@ namespace Game.Processes.Orchestration
 
         private static void ResumeProcess<TProcess>() where TProcess : IProcess
         {
-            var processes = Process.GetProcesses().Where(c => GetProcessesIds(typeof(TProcess)).Contains(c.Id)).ToList();
+            var processesIds = GetProcessesIds(typeof(TProcess));
+            var processes = Process.GetProcesses().Where(c => processesIds.Contains(c.Id)).ToList();
             foreach (var process in processes)
             {
                 foreach (ProcessThread thread in process.Threads)
@@ -103,7 +105,8 @@ namespace Game.Processes.Orchestration
 
         private static void KillProcess(Type processType)
         {
-            var processes = Process.GetProcesses().Where(c => GetProcessesIds(processType).Contains(c.Id)).ToList();
+            var processesIds = GetProcessesIds(processType);
+            var processes = Process.GetProcesses().Where(c => processesIds.Contains(c.Id)).ToList();
             foreach (var process in processes)
             {
                 _OpenProcesses.Remove(process.Id, out _);

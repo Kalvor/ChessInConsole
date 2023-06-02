@@ -1,4 +1,5 @@
 ﻿using Game;
+using Game.Processes;
 using Game.Processes.Implementations;
 using Game.Processes.Orchestration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,7 +31,7 @@ catch (Exception e )
 {
 	Console.WriteLine(e.Message);
 	Console.Read();
-	ProcessesOrchestrator.ReturnProcessControl<MainProcess>();
+	ProcessesOrchestrator.ReturnProcessControl<MainProcess>(typeof(IProcess));
     throw;
 }
 

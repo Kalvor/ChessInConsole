@@ -13,7 +13,8 @@ namespace Game.Processes
         public override async Task StartAsync(string[] processJsonData)
         {
             await base.StartAsync(processJsonData);
-            ProcessesOrchestrator.ReturnProcessControl<MainProcess>();
+            Console.WriteLine("Oddaje access");
+            ProcessesOrchestrator.ReturnProcessControl<MainProcess>(this.GetType());
         }
     }
 }
