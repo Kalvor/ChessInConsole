@@ -24,10 +24,17 @@ namespace Networking.Services.Implementations
         {
             while (!ct.IsCancellationRequested)
             {
-                var connectedSocket = await GetSocketConnectionAsync(ct);
+                Socket? connectedSocket = null;
+                TcpListener? listener = null;
                 try
                 {
-                    if(!((IPEndPoint)connectedSocket.RemoteEndPoint!).Address.ToString().StartsWith(sender.Address.ToString()))
+                    listener = new TcpListener(GetLocalHost().Address, 8001);
+                    listener.ExclusiveAddressUse = true;
+                    listener.Start();
+                    connectedSocket = await listener.AcceptSocketAsync(ct);
+                    listener.Stop();
+
+                    if (!((IPEndPoint)connectedSocket.RemoteEndPoint!).Address.ToString().StartsWith(sender.Address.ToString()))
                     {
                         continue;
                     }
@@ -43,6 +50,8 @@ namespace Networking.Services.Implementations
                 }
                 catch (OperationCanceledException)
                 {
+                    listener?.Stop();
+                    connectedSocket?.Close();
                     return default;
                 }
                 catch (Exception) 
@@ -57,9 +66,15 @@ namespace Networking.Services.Implementations
         {
             while (!ct.IsCancellationRequested) 
             {
-                var connectedSocket = await GetSocketConnectionAsync(ct);
+                Socket? connectedSocket = null;
+                TcpListener? listener = null;
                 try
                 {
+                    listener = new TcpListener(GetLocalHost().Address, 8001);
+                    listener.ExclusiveAddressUse = true;
+                    listener.Start();
+                    connectedSocket = await listener.AcceptSocketAsync(ct);
+                    listener.Stop();
 
                     byte[] data = new byte[1024];
                     await connectedSocket.ReceiveAsync(data, ct);
@@ -73,6 +88,8 @@ namespace Networking.Services.Implementations
                 }
                 catch (OperationCanceledException) 
                 {
+                    listener?.Stop();
+                    connectedSocket?.Close();
                     return default;
                 }
                 catch(Exception) 
@@ -92,16 +109,6 @@ namespace Networking.Services.Implementations
             byte[] data = Encoding.ASCII.GetBytes(jsonMessage);
             await dataStream.WriteAsync(data, 0, data.Length,ct);
             client.Close();
-        }
-
-        private async Task<Socket> GetSocketConnectionAsync(CancellationToken ct)
-        {
-            TcpListener listener = new TcpListener(GetLocalHost().Address, 8001);
-            listener.ExclusiveAddressUse = true;
-            listener.Start();
-            Socket s = await listener.AcceptSocketAsync(ct);
-            listener.Stop();
-            return s;
         }
     }
 }
