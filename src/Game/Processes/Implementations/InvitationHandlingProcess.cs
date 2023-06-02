@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace Game.Processes.Implementations
 {
-    internal class InvitationHandlingProcess : BaseSlaveProcess
+    internal class InvitationHandlingProcess : BaseProcess
     {
         public static string InternalId = "4";
         private readonly MessagePrinter _MessagePrinter;
@@ -16,7 +16,7 @@ namespace Game.Processes.Implementations
         private readonly InputReader _InputReader;
         private readonly INetworkAccessor _NetworkAccessor;
         private GameInvitationResponse _Response = new();
-        private GameInvitation _Invitation;
+        private GameInvitation _Invitation = new();
         public InvitationHandlingProcess(IEnumerable<IJob> jobs, MessagePrinter messagePrinter, OptionsPicker optionsPicker, InputReader inputReader, INetworkAccessor networkAccessor) : base(jobs)
         {
             _MessagePrinter = messagePrinter;
@@ -45,7 +45,7 @@ namespace Game.Processes.Implementations
             await _NetworkAccessor.SendDataAsync(_Invitation.InvitorHost!, JsonConvert.SerializeObject(_Response), default);
             if(_Response.Accepted)
             {
-                ProcessesOrchestrator.RedirectProcessControl<InvitationHandlingProcess, OnlineChessGameProcess>(_Invitation);
+                ProcessesOrchestrator.RedirectProcessControl<MainProcess, OnlineChessGameProcess>(_Invitation);
             }
         }
     }

@@ -10,7 +10,7 @@ using System.Net;
 
 namespace Game.Processes.Implementations
 {
-    public sealed class InvitationCreatingProcess : BaseSlaveProcess
+    public sealed class InvitationCreatingProcess : BaseProcess
     {
         public static string InternalId = "1";
         private readonly MessagePrinter _MessagePrinter;

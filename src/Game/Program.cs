@@ -12,26 +12,31 @@ services.AddNetworkingLayer();
 services.AddGameServices();
 IServiceProvider serviceProvider = services.BuildServiceProvider();
 
+string processId = args.Length > 0 ?
+        args[0] : "0";
+
+nint triggeringProcessWindowHandle = args.Length > 1 ?
+    nint.Parse(args[1]) : 0;
+
+int triggeringProcessId = args.Length > 2 ?
+    int.Parse(args[2]) : 0;
+
 try
 {
-	//Console.WindowHeight = 60;
-	//Console.WindowWidth = 200;
-	var processId = args.Length > 0 ?
-		args[0] :
-		"0";
-	var currentProcesses = args.Length > 1 ?
-		JsonConvert.DeserializeObject<ConcurrentDictionary<int, string>>(args[1]) :
-		new ConcurrentDictionary<int, string>();
-
     Kernel32_Dll_Import.ShowWindow(Kernel32_Dll_Import.GetConsoleWindow(), (int)WindowVisibilityEnum.SW_SHOW);
 
-	await ProcessesOrchestrator.StartProcessByInternalIdAsync(processId, currentProcesses, serviceProvider, args.Skip(2).ToArray());
+    ProcessesOrchestrator.SuspendProcessTriggeringProcess(triggeringProcessWindowHandle, triggeringProcessId);
+
+	await ProcessesOrchestrator.StartProcessByInternalIdAsync(processId, serviceProvider, args.Skip(3).ToArray());
+
+    ProcessesOrchestrator.ResumeProcessTriggeringProcess(triggeringProcessWindowHandle, triggeringProcessId);
+
 }
 catch (Exception e )
 {
 	Console.WriteLine(e.Message);
 	Console.Read();
-	ProcessesOrchestrator.ReturnProcessControl<MainProcess>(typeof(IProcess));
+    ProcessesOrchestrator.ResumeProcessTriggeringProcess(triggeringProcessWindowHandle, triggeringProcessId);
     throw;
 }
 

@@ -2,7 +2,7 @@
 
 namespace Game.Processes.Implementations
 {
-    public class OnlineChessGameProcess : BaseSlaveProcess
+    public class OnlineChessGameProcess : BaseProcess
     {
         public static string InternalId = "3";
         public OnlineChessGameProcess(IEnumerable<IJob> jobs) : base(jobs)

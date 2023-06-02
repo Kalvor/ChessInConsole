@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Game.Processes.Implementations
 {
-    public sealed class LocalChessGameProcess : BaseSlaveProcess
+    public sealed class LocalChessGameProcess : BaseProcess
     {
         public static string InternalId = "2";
         public LocalChessGameProcess(IEnumerable<IJob> jobs) : base(jobs)
