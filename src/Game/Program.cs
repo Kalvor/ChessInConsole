@@ -21,24 +21,45 @@ nint triggeringProcessWindowHandle = args.Length > 1 ?
 int triggeringProcessId = args.Length > 2 ?
     int.Parse(args[2]) : 0;
 
+AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnProcessExit);
+Console.CancelKeyPress += OnCancelKeyPressed;
+
 try
 {
     Kernel32_Dll_Import.ShowWindow(Kernel32_Dll_Import.GetConsoleWindow(), (int)WindowVisibilityEnum.SW_SHOW);
 
-    ProcessesOrchestrator.SuspendProcessTriggeringProcess(triggeringProcessWindowHandle, triggeringProcessId);
+    ProcessesOrchestrator.SuspendProcess(triggeringProcessWindowHandle, triggeringProcessId);
 
-	await ProcessesOrchestrator.StartProcessByInternalIdAsync(processId, serviceProvider, args.Skip(3).ToArray());
+    await ProcessesOrchestrator.StartProcessByInternalIdAsync(processId, serviceProvider, args.Skip(3).ToArray());
 
-    ProcessesOrchestrator.ResumeProcessTriggeringProcess(triggeringProcessWindowHandle, triggeringProcessId);
+    ProcessesOrchestrator.ResumeProcess(triggeringProcessWindowHandle, triggeringProcessId);
 
 }
-catch (Exception e )
+catch (Exception e)
 {
-	Console.WriteLine(e.Message);
-	Console.Read();
-    ProcessesOrchestrator.ResumeProcessTriggeringProcess(triggeringProcessWindowHandle, triggeringProcessId);
+    Console.WriteLine(e.Message);
+    Console.Read();
+    ProcessesOrchestrator.ResumeProcess(triggeringProcessWindowHandle, triggeringProcessId);
     throw;
 }
 
+void OnProcessExit(object? sender, EventArgs e)
+{
+    ProcessesOrchestrator.ResumeProcess(triggeringProcessWindowHandle, triggeringProcessId);
+}
+void OnCancelKeyPressed(object? sender, ConsoleCancelEventArgs e)
+{
+    if(IsMain())
+    {
+        Environment.Exit(0);
+    }
+    else
+    {
+        OnProcessExit(sender, e);
+    }
+}
 
-
+bool IsMain()
+{
+    return triggeringProcessWindowHandle == 0 && triggeringProcessId == 0;
+}

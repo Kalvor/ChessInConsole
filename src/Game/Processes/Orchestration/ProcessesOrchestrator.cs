@@ -8,22 +8,22 @@ namespace Game.Processes.Orchestration
 {
     public static class ProcessesOrchestrator
     {
-        public static void SuspendProcessTriggeringProcess(nint triggeringProcessWindowHandle, int triggeringProcessId) 
+        public static void SuspendProcess(nint processWindowHandle, int processId) 
         { 
-            if(triggeringProcessWindowHandle != 0) 
-            { 
-               // Kernel32_Dll_Import.ShowWindow(triggeringProcessWindowHandle, (int)WindowVisibilityEnum.SW_HIDE);
-            }
-            SuspendProcess(triggeringProcessId);
+            if(processWindowHandle != 0) 
+               Kernel32_Dll_Import.ShowWindow(processWindowHandle, (int)WindowVisibilityEnum.SW_HIDE);
+
+            if(processId != 0)
+                SuspendProcess(processId);
         }
 
-        public static void ResumeProcessTriggeringProcess(nint triggeringProcessWindowHandle, int triggeringProcessId) 
+        public static void ResumeProcess(nint processWindowHandle, int processId) 
         {
-            if (triggeringProcessWindowHandle != 0)
-            {
-                Kernel32_Dll_Import.ShowWindow(triggeringProcessWindowHandle, (int)WindowVisibilityEnum.SW_SHOW);
-            }
-            ResumeProcess(triggeringProcessId);
+            if (processWindowHandle != 0)
+                Kernel32_Dll_Import.ShowWindow(processWindowHandle, (int)WindowVisibilityEnum.SW_SHOW);
+
+            if(processId != 0)
+                ResumeProcess(processId);
         }
 
         public static async Task StartProcessByInternalIdAsync(string id, IServiceProvider services, string[] objectJsonData)
