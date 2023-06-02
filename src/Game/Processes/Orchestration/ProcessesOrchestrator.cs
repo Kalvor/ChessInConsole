@@ -43,10 +43,14 @@ namespace Game.Processes.Orchestration
         {
             nint currentProcessWindowHandle = Kernel32_Dll_Import.GetConsoleWindow();
             int currentProcessId = Process.GetCurrentProcess().Id;
-            StartProcess<TTargetProcess>(currentProcessWindowHandle, currentProcessId, targetAdditionalData);
+            var process = StartProcess<TTargetProcess>(currentProcessWindowHandle, currentProcessId, targetAdditionalData);
+            while (!process!.HasExited) //Softlock preventing triggering process to close itself and further execution (possible due to time needed in another instance for suspension of trigerring process threads) 
+            {
+
+            }
         }
 
-        private static void StartProcess<TTargetProcess>(nint currentProcessWindowHandle, int currentProcessId, params object[] additionalData)
+        private static Process StartProcess<TTargetProcess>(nint currentProcessWindowHandle, int currentProcessId, params object[] additionalData)
             where TTargetProcess : IProcess
         {
             var targetProcessInternalId = (string)typeof(TTargetProcess).GetField("InternalId", BindingFlags.Public | BindingFlags.Static)!.GetValue(null)!;
@@ -61,11 +65,7 @@ namespace Game.Processes.Orchestration
             {
                 p_info.ArgumentList.Add(JsonConvert.SerializeObject(obj));
             }
-            var process = Process.Start(p_info);
-            while (!process!.HasExited) //Softlock preventing triggering process to close itself
-            {
-                
-            }
+            return Process.Start(p_info)!;
         }
 
         private static void SuspendProcess(int processId)
