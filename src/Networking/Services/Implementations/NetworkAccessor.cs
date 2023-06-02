@@ -20,11 +20,11 @@ namespace Networking.Services.Implementations
                 .First().Address.ToString());
         }
 
-        public async Task<TData?> ListenFromDataAsync<TData>(Host sender)
+        public async Task<TData?> ListenFromDataAsync<TData>(Host sender, CancellationToken ct)
         {
-            while (true)
+            while (!ct.IsCancellationRequested)
             {
-                var connectedSocket = await GetSocketConnectionAsync();
+                var connectedSocket = await GetSocketConnectionAsync(ct);
                 try
                 {
                     if(!((IPEndPoint)connectedSocket.RemoteEndPoint!).Address.ToString().StartsWith(sender.Address.ToString()))
@@ -32,7 +32,7 @@ namespace Networking.Services.Implementations
                         continue;
                     }
                     byte[] data = new byte[1024];
-                    await connectedSocket.ReceiveAsync(data);
+                    await connectedSocket.ReceiveAsync(data, ct);
                     connectedSocket.Close();
                     var dataString = Encoding.ASCII.GetString(data);
                     TData result = JsonConvert.DeserializeObject<TData>(dataString);
@@ -40,24 +40,29 @@ namespace Networking.Services.Implementations
                     if (result == null) continue;
 
                     return result;
+                }
+                catch (OperationCanceledException)
+                {
+                    return default;
                 }
                 catch (Exception) 
                 { 
                     continue; 
                 }
             }
+            return default;
         }
 
-        public async Task<TData?> ListenFromDataAsync<TData>()
+        public async Task<TData?> ListenFromDataAsync<TData>(CancellationToken ct)
         {
-            while (true) 
+            while (!ct.IsCancellationRequested) 
             {
-                var connectedSocket = await GetSocketConnectionAsync();
+                var connectedSocket = await GetSocketConnectionAsync(ct);
                 try
                 {
 
                     byte[] data = new byte[1024];
-                    await connectedSocket.ReceiveAsync(data);
+                    await connectedSocket.ReceiveAsync(data, ct);
                     connectedSocket.Close();
                     var dataString = Encoding.ASCII.GetString(data);
                     TData result = JsonConvert.DeserializeObject<TData>(dataString);
@@ -66,29 +71,35 @@ namespace Networking.Services.Implementations
 
                     return result;
                 }
+                catch (OperationCanceledException) 
+                {
+                    return default;
+                }
                 catch(Exception) 
                 {
                     continue; 
                 }
             }
+            return default;
         }
 
-        public async Task SendDataAsync(Host reciever, string jsonMessage)
+        public async Task SendDataAsync(Host reciever, string jsonMessage, CancellationToken ct)
         {
             TcpClient client = new TcpClient();
             client.SendTimeout = 1000;
-            await client.ConnectAsync(reciever.Address, 8001);
+            await client.ConnectAsync(reciever.Address, 8001,ct);
             using Stream dataStream = client.GetStream();
             byte[] data = Encoding.ASCII.GetBytes(jsonMessage);
-            await dataStream.WriteAsync(data, 0, data.Length);
+            await dataStream.WriteAsync(data, 0, data.Length,ct);
             client.Close();
         }
 
-        private async Task<Socket> GetSocketConnectionAsync()
+        private async Task<Socket> GetSocketConnectionAsync(CancellationToken ct)
         {
             TcpListener listener = new TcpListener(GetLocalHost().Address, 8001);
+            listener.ExclusiveAddressUse = true;
             listener.Start();
-            Socket s = await listener.AcceptSocketAsync();
+            Socket s = await listener.AcceptSocketAsync(ct);
             listener.Stop();
             return s;
         }

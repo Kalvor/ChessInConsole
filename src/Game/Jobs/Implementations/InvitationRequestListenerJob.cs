@@ -15,8 +15,11 @@ namespace Game.Jobs.Implementations
 
         public override async Task JobMethodAsync()
         {
-            var invitation = await _NetworkAccessor.ListenFromDataAsync<GameInvitation>();
-            ProcessesOrchestrator.RedirectProcessControl<MainProcess, InvitationHandlingProcess>(invitation);
+            var invitation = await _NetworkAccessor.ListenFromDataAsync<GameInvitation>(this.CancellationToken);
+            if(invitation != null)
+            {
+                ProcessesOrchestrator.RedirectProcessControl<MainProcess, InvitationHandlingProcess>(invitation);
+            }
         }
     }
 }

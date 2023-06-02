@@ -42,7 +42,7 @@ namespace Game.Processes.Implementations
                 DisplayTable.Input_Decline_Invitation
              ) == 0;
 
-            await _NetworkAccessor.SendDataAsync(_Invitation.InvitorHost!, JsonConvert.SerializeObject(_Response));
+            await _NetworkAccessor.SendDataAsync(_Invitation.InvitorHost!, JsonConvert.SerializeObject(_Response), default);
             if(_Response.Accepted)
             {
                 ProcessesOrchestrator.RedirectProcessControl<InvitationHandlingProcess, OnlineChessGameProcess>(_Invitation);
