@@ -47,7 +47,7 @@ namespace Game.Processes.Implementations
             _Invitation.ClockAdd = _InputReader.ReadInt();
 
             _MessagePrinter.PrintText(DisplayTable.Input_PiecesColor_Create_Invitation);
-            _Invitation.PiecesColor = (PiecesColorEnum)_OptionsPicker.PickOptions(
+            _Invitation.PiecesColor = (Color)_OptionsPicker.PickOptions(
                 DisplayTable.Input_PiecesColorBlack_Create_Invitation,
                 DisplayTable.Input_PiecesColorWhite_Create_Invitation,
                 DisplayTable.Input_PiecesColorRandom_Create_Invitation

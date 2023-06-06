@@ -5,17 +5,17 @@ namespace Chess.Tools
 {
     public static class PieceFactory
     {
-        public static IPiece Produce(char pieceSymbol)
+        public static Piece Produce(char pieceSymbol)
         {
-            PlayerColor playerColor = Char.IsUpper(pieceSymbol) ? PlayerColor.White : PlayerColor.Black;
+            Color pieceColor = Char.IsUpper(pieceSymbol) ? Color.White : Color.Black;
             return pieceSymbol.ToString().ToLower() switch
             {
-                "k" => new King(playerColor),
-                "q" => new Queen(playerColor),
-                "r" => new Rook(playerColor),
-                "b" => new Bishop(playerColor),
-                "n" => new Knight(playerColor),
-                "p" => new Pawn(playerColor),
+                "k" => new King(pieceColor),
+                "q" => new Queen(pieceColor),
+                "r" => new Rook(pieceColor),
+                "b" => new Bishop(pieceColor),
+                "n" => new Knight(pieceColor),
+                "p" => new Pawn(pieceColor),
                 _=>throw new NotImplementedException(),
             };
         }

@@ -1,6 +1,6 @@
 ﻿namespace Chess.Data
 {
-    public enum PlayerColor
+    public enum Color
     {
         White,Black
     }

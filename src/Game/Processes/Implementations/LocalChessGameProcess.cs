@@ -1,4 +1,5 @@
-﻿using Chess.Data;
+﻿using Chess;
+using Chess.Data;
 using Game.Jobs;
 using Game.Tools;
 
@@ -17,8 +18,8 @@ namespace Game.Processes.Implementations
 
         public override Task ProcessMethodAsync()
         {
-            Board currentBoard = Board.StartingBoard();
-            _BoardPrinter.Print(currentBoard);
+            ChessGame currentGame = ChessGame.Begin();
+            _BoardPrinter.Print(currentGame);
             var x = Console.ReadLine();
 
             return Task.CompletedTask;

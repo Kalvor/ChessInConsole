@@ -1,30 +1,42 @@
-﻿using Chess.Data;
+﻿using Chess;
 using System.Text;
 
 namespace Game.Tools
 {
     public sealed class BoardPrinter
     {
-        private char WhiteSquere = ' ';
-        private char BlackSquere = '■';
-        public void Print(Board board)
+        public void Print(ChessGame chessGame)
         {
-            Console.OutputEncoding = Encoding.Unicode;
-            for (int i=8;i> 0;i--)
+            string emptySquere = "   ";//three
+            string pipe = " | ";//three
+            int singleColumnSize = 6;
+            int fullRowSize = (singleColumnSize * 8) + 3;
+            Console.WriteLine(String.Join("", Enumerable.Repeat("-", fullRowSize)));
+
+            for (int i = 8; i > 0; i--)
             {
-                for(int j = 1; j <= 8; j++)
+                Console.Write(i + pipe);
+                for (int j = 1; j <= 8; j++)
                 {
-                    if (board.FEN.Position[new(i,j)] == null)
+                    if (chessGame.FEN.Position[new(i, j)] == null)
                     {
-                        if ((i + j) % 2 == 0) Console.Write(BlackSquere);
-                        else Console.Write(WhiteSquere);
+                        Console.Write(emptySquere + pipe);
                     }
                     else
                     {
-                        Console.Write(board.FEN.Position[new(i, j)]!.DisplayChar);
+                        Console.Write(chessGame.FEN.Position[new(i, j)]!.Display + pipe);
                     }
                 }
                 Console.WriteLine();
+                Console.WriteLine(String.Join("", Enumerable.Repeat("-", fullRowSize)));
+            }
+
+            for(int i=1; i<= fullRowSize; i++)
+            {
+                if (i % singleColumnSize == 0)
+                    Console.Write((char)((i / singleColumnSize) - 1 + 65));
+                else
+                    Console.Write(" ");
             }
         }
     }

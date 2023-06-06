@@ -1,30 +1,35 @@
 ﻿using Chess.Pieces;
 using Chess.Tools;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Chess.Data
 {
     public class FEN
     {
-        public Dictionary<Squere, IPiece?> Position { get; set; }
-        public PlayerColor ActiveColor { get; set; }
+        public Dictionary<Squere, Piece?> Position { get; set; }
+        public Color ActiveColor { get; set; }
         public CastlingAbility WhitesCastling { get; set; } 
         public CastlingAbility BlacksCastling { get; set; } 
         public Squere? EnPassantSquere { get; set; }
         public int HalfMovesCount { get; set; }
         public int MovesCount { get; set; }
+
         public FEN(string fen)
         {
             var splittedFen = fen.Split(" ");
             string[] ranks = splittedFen[0].Split("/");
-            Position = GetEmptyBoard();
 
-            for(int rankNumber = 8; rankNumber > 0; rankNumber-- )
+            Position = new();
+            for (int i = 1; i <= 8; i++)
+            {
+                for (int j = 1; j <= 8; j++)
+                {
+                    var letterNotation = (char)(96 + j);
+                    string squereNotation = letterNotation.ToString() + i;
+                    Position.Add(new(squereNotation), null);
+                }
+            }
+
+            for (int rankNumber = 8; rankNumber > 0; rankNumber-- )
             {
                 int rankNumberIndex = 8 - rankNumber;
                 int currentColumnNumber = 1;
@@ -49,27 +54,12 @@ namespace Chess.Data
                 }
             }
 
-            ActiveColor = splittedFen[1] == "w" ? PlayerColor.White : PlayerColor.Black;
+            ActiveColor = splittedFen[1] == "w" ? Color.White : Color.Black;
             WhitesCastling = new(new string(splittedFen[2].Where(Char.IsUpper).ToArray()));
             BlacksCastling = new(new string(splittedFen[2].Where(c=>!Char.IsUpper(c)).ToArray()));
             EnPassantSquere = splittedFen[3] == "-" ? null : new(splittedFen[3]);
             HalfMovesCount = int.Parse(splittedFen[4]);
             MovesCount = int.Parse(splittedFen[5]);
-        }
-
-        private Dictionary<Squere,IPiece?> GetEmptyBoard()
-        {
-            Dictionary<Squere, IPiece?> board = new();
-            for(int i=1;i<=8;i++)
-            {
-                for(int j=1;j<=8;j++)
-                {
-                    var letterNotation = (char)(96 + j);
-                    string squereNotation = letterNotation.ToString() + i;
-                    board.Add(new(squereNotation), null);
-                }
-            }
-            return board;
         }
     }
 
@@ -77,11 +67,11 @@ namespace Chess.Data
     {
         public bool CanQueenSide { get; set; }
         public bool CanKingSide { get; set; }
-        public CastlingAbility(string notationFragment)
+        public CastlingAbility(string fenFragment)
         {
-            if(notationFragment.ToLower().Contains("k"))
+            if(fenFragment.ToLower().Contains("k"))
                 CanKingSide= true;
-            if(notationFragment.ToLower().Contains("q"))
+            if(fenFragment.ToLower().Contains("q"))
                 CanQueenSide= true;
         }
     }
