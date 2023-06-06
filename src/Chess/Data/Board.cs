@@ -1,20 +1,19 @@
-﻿using Chess.Pieces;
-using Chess.Tools;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Chess.Tools;
 
 namespace Chess.Data
 {
     public sealed class Board
     {
-        private FEN _FEN;
+        public FEN FEN;
         private Clock _Clock;
-        public Board()
+        public Board(FEN fen)
         {
-           
+            FEN = fen;
+        }
+
+        public static Board StartingBoard()
+        {
+            return new Board(new FEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"));
         }
     }
 }

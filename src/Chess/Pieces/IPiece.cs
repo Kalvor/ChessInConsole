@@ -4,6 +4,8 @@ namespace Chess.Pieces
 {
     public interface IPiece
     {
-        public PlayerColor Color { get; set; }
+        PlayerColor Color { get; }
+        string DisplayChar { get; }
+        Squere[] GetAvaliableSqueres(Board board);
     }
 }

@@ -16,7 +16,7 @@ namespace Game
 
             services.AddSingleton<InputReader>();
             services.AddSingleton<OptionsPicker>();
-            services.AddSingleton<BoardDisplayer>();
+            services.AddSingleton<BoardPrinter>();
             services.AddSingleton<MessagePrinter>();
             services.AddSingleton((sp) => new JobsCancellationPool(GetContractsImplementationTypes<IJob>()));
             return services;

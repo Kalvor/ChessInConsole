@@ -1,24 +1,24 @@
-﻿using Game.Jobs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Chess.Data;
+using Game.Jobs;
+using Game.Tools;
 
 namespace Game.Processes.Implementations
 {
     public sealed class LocalChessGameProcess : BaseProcess
     {
         public static string InternalId = "2";
-        public LocalChessGameProcess(IEnumerable<IJob> jobs) : base(jobs)
+        private readonly BoardPrinter _BoardPrinter;
+        public LocalChessGameProcess(IEnumerable<IJob> jobs, BoardPrinter boardPrinter) : base(jobs)
         {
+            _BoardPrinter = boardPrinter;
         }
 
         public override IEnumerable<Type> JobTypesToHost => new[] { typeof(IJob) };
 
         public override Task ProcessMethodAsync()
         {
-            Console.WriteLine("SZACHY!");
+            Board currentBoard = Board.StartingBoard();
+            _BoardPrinter.Print(currentBoard);
             var x = Console.ReadLine();
 
             return Task.CompletedTask;

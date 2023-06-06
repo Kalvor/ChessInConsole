@@ -1,4 +1,5 @@
 ﻿using Chess.Pieces;
+using Chess.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,26 +24,28 @@ namespace Chess.Data
             string[] ranks = splittedFen[0].Split("/");
             Position = GetEmptyBoard();
 
-            for(int i = 8;i>0;i-- )
+            for(int rankNumber = 8; rankNumber > 0; rankNumber-- )
             {
-                int rankNumber = 8 - i + 1;
-                for(int j = 1; j <= ranks[rankNumber].Length; j++)
+                int rankNumberIndex = 8 - rankNumber;
+                int currentColumnNumber = 1;
+                for (int j = 1; j <= ranks[rankNumberIndex].Length; j++)
                 {
-                    bool isNumeric = Char.IsNumber(ranks[rankNumber][j - 1]);
+                    bool isNumeric = Char.IsNumber(ranks[rankNumberIndex][j - 1]);
                     if (isNumeric)
                     {
-                        int parsedValue = int.Parse(ranks[rankNumber][j - 1].ToString());
+                        int parsedValue = int.Parse(ranks[rankNumberIndex][j - 1].ToString());
                         for(int z = 0; z < parsedValue; z++)
                         {
-                            Position[new(rankNumber, z + j)] = null;
+                            Position[new(rankNumber, z + currentColumnNumber)] = null;
                         }
-                        j += (parsedValue - 1);
+                        currentColumnNumber += (parsedValue - 1);
                     }
                     else
                     {
-                        char pieceToPlace = ranks[rankNumber][j - 1];
-                        Position[new(rankNumber,j)] = PieceFactory.Produce(pieceToPlace);
+                        char pieceToPlace = ranks[rankNumberIndex][j - 1];
+                        Position[new(rankNumber, currentColumnNumber)] = PieceFactory.Produce(pieceToPlace);
                     }
+                    currentColumnNumber++;
                 }
             }
 

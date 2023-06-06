@@ -1,12 +1,7 @@
-﻿using Chess.Data;
-using Game;
-using Game.Processes;
-using Game.Processes.Implementations;
+﻿using Game;
 using Game.Processes.Orchestration;
 using Microsoft.Extensions.DependencyInjection;
 using Networking;
-using Newtonsoft.Json;
-using System.Collections.Concurrent;
 
 var services = new ServiceCollection();
 services.AddNetworkingLayer();
@@ -14,7 +9,7 @@ services.AddGameServices();
 IServiceProvider serviceProvider = services.BuildServiceProvider();
 
 string processId = args.Length > 0 ?
-        args[0] : "0";
+        args[0] : "2";
 
 nint triggeringProcessWindowHandle = args.Length > 1 ?
     nint.Parse(args[1]) : 0;
@@ -27,7 +22,6 @@ Console.CancelKeyPress += OnCancelKeyPressed;
 
 try
 {
-    var fen = new FEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     Kernel32_Dll_Import.ShowWindow(Kernel32_Dll_Import.GetConsoleWindow(), (int)WindowVisibilityEnum.SW_SHOW);
 
     ProcessesOrchestrator.SuspendProcess(triggeringProcessWindowHandle, triggeringProcessId);
