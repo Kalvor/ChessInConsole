@@ -1,4 +1,5 @@
-﻿using Game;
+﻿using Chess.Data;
+using Game;
 using Game.Processes;
 using Game.Processes.Implementations;
 using Game.Processes.Orchestration;
@@ -26,6 +27,7 @@ Console.CancelKeyPress += OnCancelKeyPressed;
 
 try
 {
+    var fen = new FEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     Kernel32_Dll_Import.ShowWindow(Kernel32_Dll_Import.GetConsoleWindow(), (int)WindowVisibilityEnum.SW_SHOW);
 
     ProcessesOrchestrator.SuspendProcess(triggeringProcessWindowHandle, triggeringProcessId);

@@ -1,4 +1,5 @@
-﻿using Chess.Tools;
+﻿using Chess.Pieces;
+using Chess.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +10,11 @@ namespace Chess.Data
 {
     public sealed class Board
     {
-        private FEN _CurrentPossition;
+        private FEN _FEN;
         private Clock _Clock;
-        public Board(FEN startingPosition)
+        public Board()
         {
-            _CurrentPossition = startingPosition;
+           
         }
     }
 }
