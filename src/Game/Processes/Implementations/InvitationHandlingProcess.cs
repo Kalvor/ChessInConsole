@@ -29,11 +29,12 @@ namespace Game.Processes.Implementations
 
         public override async Task ProcessMethodAsync()
         {
+
             _Invitation = JsonConvert.DeserializeObject<GameInvitation>(_ProcessJsonData[0]);
             _Response.InvitationId = _Invitation.Id;
             _MessagePrinter.PrintText(DisplayTable.Header_Main);
             _MessagePrinter.PrintText(DisplayTable.Header_Sub_ResolveInvitation);
-
+            Console.WriteLine(_ProcessJsonData[0]);
             _Response.Accepted = _OptionsPicker.PickOptions(
                 DisplayTable.Input_Accept_Invitation,
                 DisplayTable.Input_Decline_Invitation
