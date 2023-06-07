@@ -21,46 +21,46 @@ namespace Chess.Pieces
             {
                 _MoveRules.Add(new MoveRule(
                     c => c.WithCapture == false &&
-                         c.From.RankNumber == c.To.RankNumber + 1 &&
+                         c.From.RankNumber + 1 == c.To.RankNumber  &&
                          c.From.ColumnNumber == c.To.ColumnNumber));
 
                 _MoveRules.Add(new MoveRule(
                     c => c.WithCapture == false &&
                          c.From.RankNumber == 2 &&
-                         c.From.RankNumber == c.To.RankNumber + 2 &&
+                         c.From.RankNumber + 2 == c.To.RankNumber &&
                          c.From.ColumnNumber == c.To.ColumnNumber));
 
                 _MoveRules.Add(new MoveRule(
-                    c => c.WithCapture == true &&
-                         c.From.RankNumber == c.To.RankNumber + 1 &&
+                    c => /*c.WithCapture == true &&*/
+                         c.From.RankNumber + 1 == c.To.RankNumber  &&
                          c.From.ColumnNumber == c.To.ColumnNumber + 1));
 
                 _MoveRules.Add(new MoveRule(
-                    c => c.WithCapture == true &&
-                         c.From.RankNumber == c.To.RankNumber + 1 &&
+                    c => /*c.WithCapture == true &&*/
+                         c.From.RankNumber + 1 == c.To.RankNumber  &&
                          c.From.ColumnNumber == c.To.ColumnNumber - 1));
             }
             else
             {
                 _MoveRules.Add(new MoveRule(
-                c => c.WithCapture == false &&
-                     c.From.RankNumber == c.To.RankNumber - 1 &&
-                     c.From.ColumnNumber == c.To.ColumnNumber));
+                    c => c.WithCapture == false &&
+                         c.From.RankNumber -1 == c.To.RankNumber  &&
+                         c.From.ColumnNumber == c.To.ColumnNumber));
 
                 _MoveRules.Add(new MoveRule(
                     c => c.WithCapture == false &&
                          c.From.RankNumber == 7 &&
-                         c.From.RankNumber == c.To.RankNumber - 2 &&
+                         c.From.RankNumber -2 == c.To.RankNumber &&
                          c.From.ColumnNumber == c.To.ColumnNumber));
 
                 _MoveRules.Add(new MoveRule(
-                    c => c.WithCapture == true &&
-                         c.From.RankNumber == c.To.RankNumber - 1 &&
+                    c => /*c.WithCapture == true &&*/
+                         c.From.RankNumber -1 == c.To.RankNumber &&
                          c.From.ColumnNumber == c.To.ColumnNumber + 1));
 
                 _MoveRules.Add(new MoveRule(
-                    c => c.WithCapture == true &&
-                         c.From.RankNumber == c.To.RankNumber - 1 &&
+                    c => /*c.WithCapture == true &&*/
+                         c.From.RankNumber - 1 == c.To.RankNumber &&
                          c.From.ColumnNumber == c.To.ColumnNumber - 1));
             }
         }

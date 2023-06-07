@@ -61,6 +61,11 @@ namespace Chess.Data
             HalfMovesCount = int.Parse(splittedFen[4]);
             MovesCount = int.Parse(splittedFen[5]);
         }
+
+        public override string ToString()
+        {
+            return "";
+        }
     }
 
     public class CastlingAbility

@@ -9,7 +9,7 @@ services.AddGameServices();
 IServiceProvider serviceProvider = services.BuildServiceProvider();
 
 string processId = args.Length > 0 ?
-        args[0] : "2";
+        args[0] : "0";
 
 nint triggeringProcessWindowHandle = args.Length > 1 ?
     nint.Parse(args[1]) : 0;

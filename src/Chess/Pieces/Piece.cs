@@ -15,8 +15,8 @@ namespace Chess.Pieces
         }
 
         public abstract string Symbol { get; }
+        public Color Color { get; }
         protected abstract void SetRules();
-        protected Color Color { get; }
 
         public string Display => Symbol + (Color == Color.Black ? "B" : "W");
 
